@@ -1,0 +1,45 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    name: Windows Python ${{ matrix.python }}
+    runs-on: windows-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.11', '3.12', '3.13']
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install isolated test dependencies
+        run: python -m pip install -e '.[test]' build twine
+      - name: Test without a viewer
+        run: python -m pytest -q
+      - name: Check tool reference generation
+        run: |
+          python scripts/generate_catalog.py
+          git diff --exit-code -- docs/TOOLS.md docs/tool-catalog.json
+      - name: Build and validate distributions
+        if: matrix.python == '3.12'
+        run: |
+          python -m build
+          python -m twine check dist/*.whl dist/*.tar.gz
+          python scripts/build_release.py
+      - name: Test installed wheel in a fresh environment
+        if: matrix.python == '3.12'
+        shell: pwsh
+        run: |
+          $wheels = @(Get-ChildItem -LiteralPath dist -Filter '*.whl')
+          if ($wheels.Count -ne 1) { throw 'Expected one wheel' }
+          python scripts/verify_wheel.py $wheels[0].FullName

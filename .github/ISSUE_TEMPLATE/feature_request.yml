@@ -1,0 +1,16 @@
+name: Reusable capability request
+description: Propose a viewer primitive or helper useful across projects.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Workflow and current gap
+      description: What can an agent not reliably do? Keep private product rules and assets out.
+    validations:
+      required: true
+  - type: textarea
+    id: contract
+    attributes:
+      label: Proposed inputs, outputs and verification
+      description: Include unavailable/error behavior, authority needed, and how actual effect could be checked.

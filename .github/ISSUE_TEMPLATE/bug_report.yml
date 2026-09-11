@@ -1,0 +1,25 @@
+name: Bug report
+description: Report a reproducible Firestorm MCP failure with scrubbed evidence.
+labels: [bug]
+body:
+  - type: textarea
+    id: versions
+    attributes:
+      label: Environment
+      description: OS, Python, MCP package and Firestorm build. No account or device identifiers.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Minimal reproduction
+      description: Exact tool, scrubbed arguments, login/lease state and steps. Prefer an original synthetic fixture.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Expected and observed result
+      description: Distinguish a dispatched action, UI readback and observed effect. Do not attach raw private logs or screenshots.
+    validations:
+      required: true

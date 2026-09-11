@@ -1,0 +1,4108 @@
+[
+  {
+    "name": "control_acquire",
+    "description": "Acquire exclusive bridge control for a multi-step workflow. Other clients can still read connection status/events. Renew before expiry and release in finally.",
+    "inputSchema": {
+      "properties": {
+        "label": {
+          "default": "Blender asset verification",
+          "title": "Label",
+          "type": "string"
+        },
+        "seconds": {
+          "default": 300,
+          "title": "Seconds",
+          "type": "number"
+        }
+      },
+      "title": "control_acquireArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "control_release",
+    "description": "Release this client's exclusive control lease.",
+    "inputSchema": {
+      "properties": {},
+      "title": "control_releaseArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "native_file_dialogs",
+    "description": "List recognized Windows Open-file dialogs owned by this Firestorm installation. English common dialogs only; unsupported layouts require manual selection.",
+    "inputSchema": {
+      "properties": {},
+      "title": "native_file_dialogsArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "native_file_choose",
+    "description": "Select an existing file in a freshly discovered Firestorm Open dialog. Verifies window ownership and filename readback. Import success must be checked in viewer state. Know which import/upload action opened the picker first.",
+    "inputSchema": {
+      "properties": {
+        "dialog_id": {
+          "title": "Dialog Id",
+          "type": "integer"
+        },
+        "filename": {
+          "title": "Filename",
+          "type": "string"
+        }
+      },
+      "required": [
+        "dialog_id",
+        "filename"
+      ],
+      "title": "native_file_chooseArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "connection_status",
+    "description": "Check whether the local Firestorm LEAP helper is connected. Does not log in or change the viewer.",
+    "inputSchema": {
+      "properties": {},
+      "title": "connection_statusArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "capabilities_refresh",
+    "description": "Discover all APIs and operations exposed by this running viewer; refresh dynamic MCP tool discovery.",
+    "inputSchema": {
+      "properties": {},
+      "title": "capabilities_refreshArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_api_inspect",
+    "description": "Read the live description and required arguments for an API or operation. Discover before calling unfamiliar operations.",
+    "inputSchema": {
+      "properties": {
+        "api": {
+          "title": "Api",
+          "type": "string"
+        },
+        "operation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Operation"
+        }
+      },
+      "required": [
+        "api"
+      ],
+      "title": "viewer_api_inspectArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_call",
+    "description": "Invoke any discovered viewer API operation. arguments can contain typed LLSD values: {$uuid: string}, {$uri: string}, {$binary_base64: string}. Read state after writes; timeouts must not be blindly retried.",
+    "inputSchema": {
+      "properties": {
+        "api": {
+          "title": "Api",
+          "type": "string"
+        },
+        "operation": {
+          "title": "Operation",
+          "type": "string"
+        },
+        "arguments": {
+          "additionalProperties": true,
+          "default": {},
+          "title": "Arguments",
+          "type": "object"
+        },
+        "expect_reply": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expect Reply"
+        },
+        "timeout": {
+          "default": 15,
+          "title": "Timeout",
+          "type": "number"
+        }
+      },
+      "required": [
+        "api",
+        "operation"
+      ],
+      "title": "viewer_callArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "events_subscribe",
+    "description": "Subscribe to a named viewer event stream, such as StartupState or LLAutopilot. Events are bounded and remain local until read.",
+    "inputSchema": {
+      "properties": {
+        "source": {
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source"
+      ],
+      "title": "events_subscribeArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "events_unsubscribe",
+    "description": "Stop subscribing to a viewer event stream.",
+    "inputSchema": {
+      "properties": {
+        "source": {
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source"
+      ],
+      "title": "events_unsubscribeArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "events_read",
+    "description": "Read subscribed viewer events after a cursor. The dropped flag identifies buffer overflow; do not infer missing events.",
+    "inputSchema": {
+      "properties": {
+        "after": {
+          "default": 0,
+          "title": "After",
+          "type": "integer"
+        }
+      },
+      "title": "events_readArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "ui_find",
+    "description": "Find UI control paths inside an explicit subtree, for example /main_view/menu_stack/world_panel/Floater View/Local Mesh. floater_open supplies the panel's ui_path when resolvable. Narrow scope avoids enumerating an entire loaded inventory.",
+    "inputSchema": {
+      "properties": {
+        "query": {
+          "title": "Query",
+          "type": "string"
+        },
+        "under": {
+          "default": "",
+          "title": "Under",
+          "type": "string"
+        },
+        "limit": {
+          "default": 50,
+          "title": "Limit",
+          "type": "integer"
+        },
+        "include_info": {
+          "default": false,
+          "title": "Include Info",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "query"
+      ],
+      "title": "ui_findArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "ui_get_value",
+    "description": "Read the value of a specific discovered UI control. Use targeted paths to avoid unrelated chat or private fields.",
+    "inputSchema": {
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "title": "ui_get_valueArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "ui_click",
+    "description": "Click a visible, enabled discovered control by path. Returns input handling status, not proof of a simulator-side effect.",
+    "inputSchema": {
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "button": {
+          "default": "LEFT",
+          "title": "Button",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "title": "ui_clickArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "ui_set_text",
+    "description": "Replace text in a discovered edit control using viewer input, then read back its value. Does not press Enter.",
+    "inputSchema": {
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "text"
+      ],
+      "title": "ui_set_textArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "ui_select",
+    "description": "Select a discovered combobox item by its actual value.",
+    "inputSchema": {
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value"
+        }
+      },
+      "required": [
+        "path",
+        "value"
+      ],
+      "title": "ui_selectArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "ui_inspect",
+    "description": "Inspect a known UI path's geometry and enabled/visible state. Use floater_open and ui_find to discover panel controls.",
+    "inputSchema": {
+      "properties": {
+        "path": {
+          "default": "/main_view",
+          "title": "Path",
+          "type": "string"
+        }
+      },
+      "title": "ui_inspectArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "ui_press_key",
+    "description": "Press and release a viewer key, with optional CTL/ALT/SHIFT modifiers. A focused form may act on Enter.",
+    "inputSchema": {
+      "properties": {
+        "keysym": {
+          "title": "Keysym",
+          "type": "string"
+        },
+        "modifiers": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Modifiers",
+          "type": "array"
+        }
+      },
+      "required": [
+        "keysym"
+      ],
+      "title": "ui_press_keyArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "ui_list_menus",
+    "description": "List viewer menu entries from this installation's XUI, filter by name/label/function. These describe menus, not guaranteed enabled actions.",
+    "inputSchema": {
+      "properties": {
+        "query": {
+          "default": "",
+          "title": "Query",
+          "type": "string"
+        }
+      },
+      "title": "ui_list_menusArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "ui_invoke_menu",
+    "description": "Invoke an actual menu entry from installed XUI by exact name; unknown callback names are never dispatched. This may open a native file picker.",
+    "inputSchema": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "ui_invoke_menuArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "floater_list",
+    "description": "List registered viewer floaters and their XUI files.",
+    "inputSchema": {
+      "properties": {},
+      "title": "floater_listArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "floater_open",
+    "description": "Open a registered viewer floater and check its visibility.",
+    "inputSchema": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "floater_openArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "avatar_position",
+    "description": "Read avatar position/orientation from the viewer.",
+    "inputSchema": {
+      "properties": {},
+      "title": "avatar_positionArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "avatar_walk_to",
+    "description": "Start walking to GLOBAL coordinates. Poll avatar_movement_status and verify position; this is not pathfinding success.",
+    "inputSchema": {
+      "properties": {
+        "global_position": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Global Position",
+          "type": "array"
+        },
+        "stop_distance": {
+          "default": 0.5,
+          "title": "Stop Distance",
+          "type": "number"
+        },
+        "allow_flying": {
+          "default": false,
+          "title": "Allow Flying",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "global_position"
+      ],
+      "title": "avatar_walk_toArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "avatar_movement_status",
+    "description": "Read autopilot progress and current avatar position.",
+    "inputSchema": {
+      "properties": {},
+      "title": "avatar_movement_statusArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "avatar_stop",
+    "description": "Cancel automatic movement and read its resulting state.",
+    "inputSchema": {
+      "properties": {},
+      "title": "avatar_stopArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "world_objects",
+    "description": "List nearby objects as reported by the viewer. Availability depends on simulator interest and viewer loading.",
+    "inputSchema": {
+      "properties": {
+        "distance": {
+          "default": 32,
+          "title": "Distance",
+          "type": "number"
+        }
+      },
+      "title": "world_objectsArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "inventory_search",
+    "description": "Search a specific inventory folder recursively, returning item metadata. Does not rez, purchase or upload anything.",
+    "inputSchema": {
+      "properties": {
+        "folder_id": {
+          "title": "Folder Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "limit": {
+          "default": 50,
+          "title": "Limit",
+          "type": "integer"
+        },
+        "asset_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Asset Type"
+        }
+      },
+      "required": [
+        "folder_id",
+        "name"
+      ],
+      "title": "inventory_searchArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "setting_get",
+    "description": "Read a named viewer setting; default group is Global.",
+    "inputSchema": {
+      "properties": {
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "group": {
+          "default": "Global",
+          "title": "Group",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key"
+      ],
+      "title": "setting_getArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "setting_set",
+    "description": "Change a viewer setting and return before/after readback. Some settings persist across restarts.",
+    "inputSchema": {
+      "properties": {
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value"
+        },
+        "group": {
+          "default": "Global",
+          "title": "Group",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "value"
+      ],
+      "title": "setting_setArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "camera_set",
+    "description": "Set a fixed camera and focus in REGION coordinates. Viewport capture is needed to verify composition.",
+    "inputSchema": {
+      "properties": {
+        "position": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Position",
+          "type": "array"
+        },
+        "focus": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Focus",
+          "type": "array"
+        }
+      },
+      "required": [
+        "position",
+        "focus"
+      ],
+      "title": "camera_setArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "camera_release",
+    "description": "Release scripted camera control. This returns to viewer camera behavior, not an exact saved manual camera pose.",
+    "inputSchema": {
+      "properties": {},
+      "title": "camera_releaseArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "snapshot",
+    "description": "Capture Firestorm's rendered image and return an MCP image plus saved PNG and hash. Render evidence alone does not prove upload or visibility to others.",
+    "inputSchema": {
+      "properties": {
+        "label": {
+          "default": "snapshot",
+          "title": "Label",
+          "type": "string"
+        },
+        "width": {
+          "default": 1280,
+          "title": "Width",
+          "type": "integer"
+        },
+        "height": {
+          "default": 720,
+          "title": "Height",
+          "type": "integer"
+        },
+        "show_ui": {
+          "default": false,
+          "title": "Show Ui",
+          "type": "boolean"
+        },
+        "show_hud": {
+          "default": false,
+          "title": "Show Hud",
+          "type": "boolean"
+        },
+        "layer": {
+          "default": "COLOR",
+          "title": "Layer",
+          "type": "string"
+        }
+      },
+      "title": "snapshotArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "capture_orbit",
+    "description": "Capture repeatable orbit views around a REGION-coordinate focus and save a manifest. Releases scripted camera in finally. Caller must identify whether the subject is local preview or a server asset.",
+    "inputSchema": {
+      "properties": {
+        "focus": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Focus",
+          "type": "array"
+        },
+        "radius": {
+          "default": 3,
+          "title": "Radius",
+          "type": "number"
+        },
+        "height_offset": {
+          "default": 1,
+          "title": "Height Offset",
+          "type": "number"
+        },
+        "views": {
+          "default": 4,
+          "title": "Views",
+          "type": "integer"
+        },
+        "label": {
+          "default": "asset",
+          "title": "Label",
+          "type": "string"
+        },
+        "evidence_kind": {
+          "default": "unspecified_viewer_scene",
+          "title": "Evidence Kind",
+          "type": "string"
+        },
+        "object_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Object Id"
+        }
+      },
+      "required": [
+        "focus"
+      ],
+      "title": "capture_orbitArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "asset_inspect",
+    "description": "Inspect a local COLLADA/glTF/GLB/texture export and record its SHA256. This checks file metadata, not upload eligibility, LOD quality, land impact or in-world appearance.",
+    "inputSchema": {
+      "properties": {
+        "filename": {
+          "title": "Filename",
+          "type": "string"
+        }
+      },
+      "required": [
+        "filename"
+      ],
+      "title": "asset_inspectArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "image_compare",
+    "description": "Compare two same-size images and save an absolute-difference PNG. Metrics do not establish semantic or material correctness.",
+    "inputSchema": {
+      "properties": {
+        "reference": {
+          "title": "Reference",
+          "type": "string"
+        },
+        "observed": {
+          "title": "Observed",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reference",
+        "observed"
+      ],
+      "title": "image_compareArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "local_mesh_open",
+    "description": "Open Firestorm's Local Mesh panel. Its local replacements are visible only in this viewer and do not prove server upload.",
+    "inputSchema": {
+      "properties": {},
+      "title": "local_mesh_openArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "local_mesh_auto_reload",
+    "description": "Set local mesh automatic reload so Blender exports can refresh in the viewer. Returns the previous settings for restoration.",
+    "inputSchema": {
+      "properties": {
+        "enabled": {
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "seconds": {
+          "default": 2,
+          "title": "Seconds",
+          "type": "number"
+        }
+      },
+      "required": [
+        "enabled"
+      ],
+      "title": "local_mesh_auto_reloadArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "mesh_upload_open",
+    "description": "Open the standard mesh upload preview workflow. Does not submit an upload or authorize an upload fee.",
+    "inputSchema": {
+      "properties": {},
+      "title": "mesh_upload_openArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "mesh_upload_status",
+    "description": "Read mesh-import preview LOD sources/files/counts, physics, dimensions, warnings, displayed weights and fee with control visibility. Does not calculate or submit an upload. Quote freshness and file-content bindings remain unverified.",
+    "inputSchema": {
+      "properties": {},
+      "title": "mesh_upload_statusArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "local_mesh_status",
+    "description": "Read Local Mesh's selected item/object and displayed import log. This is local preview evidence, not a simulator upload.",
+    "inputSchema": {
+      "properties": {},
+      "title": "local_mesh_statusArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "capture_manifest_read",
+    "description": "Read a saved capture manifest created by this server.",
+    "inputSchema": {
+      "properties": {
+        "filename": {
+          "title": "Filename",
+          "type": "string"
+        }
+      },
+      "required": [
+        "filename"
+      ],
+      "title": "capture_manifest_readArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_GroupChat_leaveGroupChat",
+    "description": "Live Firestorm GroupChat.leaveGroupChat. Leave a group chat in group with UUID [\"group_id\"]\nAssumes a prior successful startIM request. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "group_id": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "group_id"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_GroupChat_sendGroupIM",
+    "description": "Live Firestorm GroupChat.sendGroupIM. send a [\"message\"] to group with UUID [\"group_id\"] Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "group_id": {},
+            "message": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "group_id",
+            "message"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_GroupChat_startGroupChat",
+    "description": "Live Firestorm GroupChat.startGroupChat. Enter a group chat in group with UUID [\"group_id\"]\nAssumes the logged-in agent is already a member of this group. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "group_id": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "group_id"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLAgent_getAgentScreenPos",
+    "description": "Live Firestorm LLAgent.getAgentScreenPos. Return screen position of the [\"avatar_id\"] avatar or own avatar if not specified\nreply contains \"x\", \"y\" coordinates and \"onscreen\" flag to indicate if it's actually in within the current window\navatar render position is used as the point Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLAgent_getAnimationInfo",
+    "description": "Live Firestorm LLAgent.getAnimationInfo. Return information about [\"item_id\"] animation Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "item_id": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "item_id"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLAgent_getAutoPilot",
+    "description": "Live Firestorm LLAgent.getAutoPilot. Send information about current state of the autopilot system to [\"reply\"]:\n[\"enabled\"]: boolean indicating whether or not autopilot is enabled\n[\"target_global\"]: array of target global {x, y, z} position\n[\"leader_id\"]: uuid of target autopilot is following\n[\"stop_distance\"]: maximum stop distance from target\n[\"target_distance\"]: last known distance from target\n[\"use_rotation\"]: boolean indicating if autopilot has a target facing rotation\n[\"target_facing\"]: array of {x, y} target direction to face\n[\"rotation_threshold\"]: target maximum angle from target facing rotation\n[\"behavior_name\"]: name of the autopilot behavior Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLAgent_getGroups",
+    "description": "Live Firestorm LLAgent.getGroups. Send information about the agent's groups on [\"reply\"]:\n[\"groups\"]: array of group information\n[\"id\"]: group id\n[\"name\"]: group name\n[\"insignia\"]: group insignia texture id\n[\"notices\"]: boolean indicating if this user accepts notices from this group\n[\"display\"]: boolean indicating if this group is listed in the user's profile\n[\"contrib\"]: user's land contribution to this group\n Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLAgent_getID",
+    "description": "Live Firestorm LLAgent.getID. Return your own avatar ID Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLAgent_getNearbyAvatarsList",
+    "description": "Live Firestorm LLAgent.getNearbyAvatarsList. Return result set key [\"result\"] for nearby avatars in a range of [\"dist\"]\nif [\"dist\"] is not specified, 'RenderFarClip' setting is used\nreply contains \"result\" table with \"id\", \"name\", \"global_pos\", \"region_pos\", \"region_id\" fields Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLAgent_getNearbyObjectsList",
+    "description": "Live Firestorm LLAgent.getNearbyObjectsList. Return result set key [\"result\"] for nearby objects in a range of [\"dist\"]\nif [\"dist\"] is not specified, 'RenderFarClip' setting is used\nreply contains \"result\" table with \"id\", \"global_pos\", \"region_pos\", \"region_id\" fields Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLAgent_getPosition",
+    "description": "Live Firestorm LLAgent.getPosition. Send information about the agent's position and orientation on [\"reply\"]:\n[\"region\"]: array of region {x, y, z} position\n[\"global\"]: array of global {x, y, z} position\n[\"euler\"]: map of {roll, pitch, yaw}\n[\"quat\"]:  array of [x, y, z, w] quaternion values Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLAgent_lookAt",
+    "description": "Live Firestorm LLAgent.lookAt. [\"type\"]: number to indicate the lookAt type, 0 to clear\n[\"obj_uuid\"]: id of object to look at, use this or [\"position\"] to indicate the target\n[\"position\"]: region position {x, y, z} where to find closest object or avatar to look at Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLAgent_playAnimation",
+    "description": "Live Firestorm LLAgent.playAnimation. Play [\"item_id\"] animation locally (by default) or [\"inworld\"] (when set to true) Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "item_id": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "item_id"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLAgent_removeCameraParams",
+    "description": "Live Firestorm LLAgent.removeCameraParams. Reset Follow camera params Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLAgent_requestSit",
+    "description": "Live Firestorm LLAgent.requestSit. [\"obj_uuid\"]: id of object to sit on, use this or [\"position\"] to indicate the sit target[\"position\"]: region position {x, y, z} where to find closest object to sit on Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLAgent_requestStand",
+    "description": "Live Firestorm LLAgent.requestStand. Ask to stand up Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLAgent_requestTeleport",
+    "description": "Live Firestorm LLAgent.requestTeleport. Teleport: [\"regionname\"], [\"x\"], [\"y\"], [\"z\"]\nIf [\"skip_confirmation\"] is true, use LLURLDispatcher rather than LLCommandDispatcher. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLAgent_requestTouch",
+    "description": "Live Firestorm LLAgent.requestTouch. [\"obj_uuid\"]: id of object to touch, use this or [\"position\"] to indicate the object to touch[\"position\"]: region position {x, y, z} where to find closest object to touch[\"face\"]: optional object face number to touch[Default: 0] Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLAgent_resetAxes",
+    "description": "Live Firestorm LLAgent.resetAxes. Set the agent to a fixed orientation (optionally specify [\"lookat\"] = array of [x, y, z]) Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLAgent_setAutoPilotTarget",
+    "description": "Live Firestorm LLAgent.setAutoPilotTarget. Update target for currently running autopilot:\n[\"target_global\"]: array of target global {x, y, z} position Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLAgent_setCameraParams",
+    "description": "Live Firestorm LLAgent.setCameraParams. Set Follow camera params, and then activate it:\n[\"camera_pos\"]: vector3, camera position in region coordinates\n[\"focus_pos\"]: vector3, what the camera is aimed at (in region coordinates)\n[\"focus_offset\"]: vector3, adjusts the camera focus position relative to the target, default is (1, 0, 0)\n[\"distance\"]: float (meters), distance the camera wants to be from its target, default is 3\n[\"focus_threshold\"]: float (meters), sets the radius of a sphere around the camera's target position within which its focus is not affected by target motion, default is 1\n[\"camera_threshold\"]: float (meters), sets the radius of a sphere around the camera's ideal position within which it is not affected by target motion, default is 1\n[\"focus_lag\"]: float (seconds), how much the camera lags as it tries to aim towards the target, default is 0.1\n[\"camera_lag\"]: float (seconds), how much the camera lags as it tries to move towards its 'ideal' position, default is 0.1\n[\"camera_pitch\"]: float (degrees), adjusts the angular amount that the camera aims straight ahead vs. straight down, maintaining the same distance, default is 0\n[\"behindness_angle\"]: float (degrees), sets the angle in degrees within which the camera is not constrained by changes in target rotation, default is 10\n[\"behindness_lag\"]: float (seconds), sets how strongly the camera is forced to stay behind the target if outside of behindness angle, default is 0\n[\"camera_locked\"]: bool, locks the camera position so it will not move\n[\"focus_locked\"]: bool, locks the camera focus so it will not move Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLAgent_setFollowCamActive",
+    "description": "Live Firestorm LLAgent.setFollowCamActive. Turns on or off scripted control of the camera using boolean [\"active\"] Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "active": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "active"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLAgent_startAutoPilot",
+    "description": "Live Firestorm LLAgent.startAutoPilot. Start the autopilot system using the following parameters:\n[\"target_global\"]: array of target global {x, y, z} position\n[\"stop_distance\"]: maximum stop distance from target [default: autopilot guess]\n[\"target_rotation\"]: array of [x, y, z, w] quaternion values [default: no target]\n[\"rotation_threshold\"]: target maximum angle from target facing rotation [default: 0.03 radians]\n[\"behavior_name\"]: name of the autopilot behavior [default: \"\"]\n[\"allow_flying\"]: allow flying during autopilot [default: True]\nevent with [\"success\"] flag is sent to 'LLAutopilot' event pump, when auto pilot is terminated Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "target_global": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "target_global"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLAgent_startFollowPilot",
+    "description": "Live Firestorm LLAgent.startFollowPilot. [\"leader_id\"]: uuid of target to follow using the autopilot system (optional with avatar_name)\n[\"avatar_name\"]: avatar name to follow using the autopilot system (optional with leader_id)\n[\"allow_flying\"]: allow flying during autopilot [default: True]\n[\"stop_distance\"]: maximum stop distance from target [default: autopilot guess] Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLAgent_stopAnimation",
+    "description": "Live Firestorm LLAgent.stopAnimation. Stop playing [\"item_id\"] animation Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "item_id": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "item_id"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLAgent_stopAutoPilot",
+    "description": "Live Firestorm LLAgent.stopAutoPilot. Stop the autopilot system:\n[\"user_cancel\"] indicates whether or not to act as though user canceled autopilot [default: false] Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLAppViewer_forceQuit",
+    "description": "Live Firestorm LLAppViewer.forceQuit. Quit abruptly Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLAppViewer_requestQuit",
+    "description": "Live Firestorm LLAppViewer.requestQuit. Ask to quit nicely Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLAppearance_detachItems",
+    "description": "Live Firestorm LLAppearance.detachItems. Detach items by id: [items_id] Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "items_id": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "items_id"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLAppearance_getOutfitItems",
+    "description": "Live Firestorm LLAppearance.getOutfitItems. Return the table of items with info(id : name, wearable_type, is_worn) inside specified outfit folder Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLAppearance_getOutfitsList",
+    "description": "Live Firestorm LLAppearance.getOutfitsList. Return the table with Outfits info(id and name) Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLAppearance_wearItems",
+    "description": "Live Firestorm LLAppearance.wearItems. Wear items by id: [items_id] Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "items_id": {},
+            "replace": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "items_id",
+            "replace"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLAppearance_wearOutfit",
+    "description": "Live Firestorm LLAppearance.wearOutfit. Wear outfit by folder id: [\"folder_id\"] OR by folder name: [\"folder_name\"]\nWhen [\"append\"] is true, outfit will be added to COF\notherwise it will replace current oufit Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLCommandDispatcher_dispatch",
+    "description": "Live Firestorm LLCommandDispatcher.dispatch. Execute a command registered as an LLCommandHandler,\npassing any required parameters:\n[\"cmd\"] string command name\n[\"params\"] array of parameters, as if from components of URL path\n[\"query\"] map of parameters, as if from ?key1=val&key2=val\n[\"trusted\"] boolean indicating trusted browser [default true] Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLCommandDispatcher_enumerate",
+    "description": "Live Firestorm LLCommandDispatcher.enumerate. Post to [\"reply\"] a map of registered LLCommandHandler instances, containing\nname key and (e.g.) untrusted flag Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLFloaterAbout_getInfo",
+    "description": "Live Firestorm LLFloaterAbout.getInfo. Request an LLSD::Map containing information used to populate About box Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLFloaterReg_clickButton",
+    "description": "Live Firestorm LLFloaterReg.clickButton. Simulate clicking the named [\"button\"] in the visible floater named in [\"name\"] Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "button": {},
+            "name": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "button",
+            "name"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLFloaterReg_getBuildMap",
+    "description": "Live Firestorm LLFloaterReg.getBuildMap. Return on [\"reply\"] data about all registered LLFloaterReg floater names Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLFloaterReg_hideInstance",
+    "description": "Live Firestorm LLFloaterReg.hideInstance. Ask to hide the floater specified in [\"name\"] Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "name": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "name"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLFloaterReg_instanceVisible",
+    "description": "Live Firestorm LLFloaterReg.instanceVisible. Return on [\"reply\"] an event whose [\"visible\"] indicates the visibility of the floater specified in [\"name\"] Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "name": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "name"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLFloaterReg_showInstance",
+    "description": "Live Firestorm LLFloaterReg.showInstance. Ask to display the floater specified in [\"name\"] Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "name": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "name"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLFloaterReg_toggleInstance",
+    "description": "Live Firestorm LLFloaterReg.toggleInstance. Ask to toggle the state of the floater specified in [\"name\"] Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "name": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "name"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLGesture_getActiveGestures",
+    "description": "Live Firestorm LLGesture.getActiveGestures. Return information about the agent's available gestures [\"reply\"]:\n[\"gestures\"]: a dictionary with UUID strings as keys\n  and the following dict values for each entry:\n     [\"name\"]: name of the gesture, may be empty\n     [\"trigger\"]: trigger string used to invoke via user chat, may be empty\n     [\"playing\"]: true or false indicating the playing state Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLGesture_isGesturePlaying",
+    "description": "Live Firestorm LLGesture.isGesturePlaying. [\"id\"]: UUID of the gesture to query.  Returns True or False in [\"playing\"] value of the result Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLGesture_startGesture",
+    "description": "Live Firestorm LLGesture.startGesture. [\"id\"]: UUID of the gesture to start playing Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLGesture_stopGesture",
+    "description": "Live Firestorm LLGesture.stopGesture. [\"id\"]: UUID of the gesture to stop Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLInventory_collectDescendantsIf",
+    "description": "Live Firestorm LLInventory.collectDescendantsIf. Return result set keys [\"categories\"] and [\"items\"] for the descendants\nof the [\"folder_id\"], if it passes specified filters:\n[\"name\"] is a substring of object's name,\n[\"desc\"] is a substring of object's description,\nasset [\"type\"] corresponds to the string name of the object's asset type\n[\"limit\"] sets item count limit in result set (default unlimited)\n[\"filter_links\"]: EXCLUDE_LINKS - don't show links, ONLY_LINKS - only show links, INCLUDE_LINKS - show links too (default) Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "folder_id": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "folder_id"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLInventory_getAssetTypeNames",
+    "description": "Live Firestorm LLInventory.getAssetTypeNames. Return the table of asset type names, contained in [\"names\"]\n Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLInventory_getBasicFolderID",
+    "description": "Live Firestorm LLInventory.getBasicFolderID. Return the UUID of the folder by specified folder type name, for example:\n\"Textures\", \"My outfits\", \"Sounds\" and other basic folders which have associated type Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "ft_name": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "ft_name"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLInventory_getDirectDescendants",
+    "description": "Live Firestorm LLInventory.getDirectDescendants. Return result set keys [\"categories\"] and [\"items\"] for the direct\ndescendants of the [\"folder_id\"] Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "folder_id": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "folder_id"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLInventory_getFolderTypeNames",
+    "description": "Live Firestorm LLInventory.getFolderTypeNames. Return the table of folder type names, contained in [\"names\"]\n Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLInventory_getItemsInfo",
+    "description": "Live Firestorm LLInventory.getItemsInfo. Return information about items or folders defined in [\"item_ids\"]:\nreply will contain [\"items\"] and [\"categories\"] result set keys Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "item_ids": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "item_ids"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLNotifications_cancel",
+    "description": "Live Firestorm LLNotifications.cancel. Cancel notification [\"uuid\"] Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "uuid": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "uuid"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLNotifications_forward",
+    "description": "Live Firestorm LLNotifications.forward. Forward to [\"pump\"] future notifications on channel [\"channel\"]\naccording to boolean [\"forward\"]. When enabled, only types matching\n[\"types\"] are forwarded, as follows:\nomitted or undefined: forward all notifications\nstring: forward only the specific named [sig]type\narray of string: forward any notification matching any named [sig]type.\nWhen boolean [\"respond\"] is true, we auto-respond to each forwarded\nnotification. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "channel": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "channel"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLNotifications_ignore",
+    "description": "Live Firestorm LLNotifications.ignore. Ignore future notification [\"name\"]\n(from <notification name= > in notifications.xml)\naccording to boolean [\"ignore\"].\nIf [\"name\"] is omitted or undefined, [un]ignore all future notifications.\nNote that ignored notifications are not forwarded unless intercepted before\nthe \"Ignore\" channel. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLNotifications_listChannelNotifications",
+    "description": "Live Firestorm LLNotifications.listChannelNotifications. Post to [\"reply\"] an array of info on notifications in channel [\"channel\"] Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "channel": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "channel"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLNotifications_listChannels",
+    "description": "Live Firestorm LLNotifications.listChannels. Post to [\"reply\"] a map of info on existing channels Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLNotifications_requestAdd",
+    "description": "Live Firestorm LLNotifications.requestAdd. Add a notification with specified [\"name\"], [\"substitutions\"] and [\"payload\"].\nIf optional [\"reply\"] specified, arrange to send user response on that LLEventPump. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLNotifications_respond",
+    "description": "Live Firestorm LLNotifications.respond. Respond to notification [\"uuid\"] with data in [\"response\"] Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "uuid": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "uuid"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLPipeline_disableAllRenderFeatures",
+    "description": "Live Firestorm LLPipeline.disableAllRenderFeatures. Turn off all rendering features. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLPipeline_disableAllRenderInfoDisplays",
+    "description": "Live Firestorm LLPipeline.disableAllRenderInfoDisplays. Turn off all info displays. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLPipeline_disableAllRenderTypes",
+    "description": "Live Firestorm LLPipeline.disableAllRenderTypes. Turn off all rendering types. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLPipeline_enableAllRenderFeatures",
+    "description": "Live Firestorm LLPipeline.enableAllRenderFeatures. Turn on all rendering features. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLPipeline_enableAllRenderInfoDisplays",
+    "description": "Live Firestorm LLPipeline.enableAllRenderInfoDisplays. Turn on all info displays. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLPipeline_enableAllRenderTypes",
+    "description": "Live Firestorm LLPipeline.enableAllRenderTypes. Turn on all rendering types. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLPipeline_hasRenderFeature",
+    "description": "Live Firestorm LLPipeline.hasRenderFeature. Check if rendering [\"feature\"] is enabled:\nSee: llviewermenu.cpp:render_feature_from_string for list of available features. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLPipeline_hasRenderInfoDisplay",
+    "description": "Live Firestorm LLPipeline.hasRenderInfoDisplay. Check if info [\"display\"] is enabled:\nSee: llviewermenu.cpp:info_display_from_string for list of available displays. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLPipeline_hasRenderType",
+    "description": "Live Firestorm LLPipeline.hasRenderType. Check if rendering [\"type\"] is enabled:\nSee: llviewermenu.cpp:render_type_from_string for list of available types. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLPipeline_toggleRenderFeatures",
+    "description": "Live Firestorm LLPipeline.toggleRenderFeatures. Toggle rendering [\"features\"]:\nSee: llviewermenu.cpp:feature_from_string for list of available features. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLPipeline_toggleRenderInfoDisplays",
+    "description": "Live Firestorm LLPipeline.toggleRenderInfoDisplays. Toggle info [\"displays\"]:\nSee: llviewermenu.cpp:info_display_from_string for list of available displays. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLPipeline_toggleRenderTypes",
+    "description": "Live Firestorm LLPipeline.toggleRenderTypes. Toggle rendering [\"types\"]:\nSee: llviewermenu.cpp:render_type_from_string for list of available types. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLStartUp_getStateTable",
+    "description": "Live Firestorm LLStartUp.getStateTable. Reply with array of EStartupState string names Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLStartUp_postStartupState",
+    "description": "Live Firestorm LLStartUp.postStartupState. Refresh \"StartupState\" listeners with current startup state Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLTeleportHandler_teleport",
+    "description": "Live Firestorm LLTeleportHandler.teleport. Teleport to specified [\"regionname\"] at\nspecified region-relative [\"x\"], [\"y\"], [\"z\"].\nIf [\"regionname\"] omitted, teleport to GLOBAL\ncoordinates [\"x\"], [\"y\"], [\"z\"]. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLURLDispatcher_dispatch",
+    "description": "Live Firestorm LLURLDispatcher.dispatch. At startup time or on clicks in internal web browsers,\nteleport, open map, or run requested command.\n[\"url\"] string url to dispatch\n[\"trusted\"] boolean indicating trusted browser [default true] Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLURLDispatcher_dispatchFromTextEditor",
+    "description": "Live Firestorm LLURLDispatcher.dispatchFromTextEditor. Dispatch [\"url\"] as if from an edit field. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLURLDispatcher_dispatchRightClick",
+    "description": "Live Firestorm LLURLDispatcher.dispatchRightClick. Dispatch [\"url\"] as if from a right-click on a hot link. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLViewerControl_get",
+    "description": "Live Firestorm LLViewerControl.get. Query [\"group\"] control [\"key\"], replying on LLEventPump [\"reply\"]\n[\"group\"] is one of \"CrashSettings\", \"Global\", \"PerAccount\", \"Warnings\"\n Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "group": {},
+            "key": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "group",
+            "key"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLViewerControl_groups",
+    "description": "Live Firestorm LLViewerControl.groups. Send on LLEventPump [\"reply\"] an array [\"groups\"] of valid group names Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLViewerControl_set",
+    "description": "Live Firestorm LLViewerControl.set. Set [\"group\"] control [\"key\"] to optional value [\"value\"]\nIf [\"value\"] omitted, set to control's defined default value\n[\"group\"] is one of \"CrashSettings\", \"Global\", \"PerAccount\", \"Warnings\"\nIf [\"reply\"] requested, send new [\"value\"] on specified LLEventPump\n Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "group": {},
+            "key": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "group",
+            "key"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLViewerControl_toggle",
+    "description": "Live Firestorm LLViewerControl.toggle. Toggle [\"group\"] control [\"key\"], if boolean\n[\"group\"] is one of \"CrashSettings\", \"Global\", \"PerAccount\", \"Warnings\"\nIf [\"reply\"] requested, send new [\"value\"] on specified LLEventPump\n Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "group": {},
+            "key": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "group",
+            "key"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLViewerControl_vars",
+    "description": "Live Firestorm LLViewerControl.vars. For [\"group\"], send on LLEventPump [\"reply\"] an array [\"vars\"],\neach of whose entries looks like:\n  [\"name\"], [\"type\"], [\"value\"], [\"comment\"]\n[\"group\"] is one of \"CrashSettings\", \"Global\", \"PerAccount\", \"Warnings\"\n Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "group": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "group"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLViewerWindow_requestReshape",
+    "description": "Live Firestorm LLViewerWindow.requestReshape. Resize the window: [\"w\"], [\"h\"] Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLViewerWindow_saveSnapshot",
+    "description": "Live Firestorm LLViewerWindow.saveSnapshot. Save screenshot: [\"filename\"], [\"width\"], [\"height\"], [\"showui\"], [\"showhud\"], [\"rebuild\"], [\"type\"]\ntype: \"COLOR\", \"DEPTH\"\nPost on [\"reply\"] an event containing [\"ok\"] Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "filename": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "filename"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLWindow_getInfo",
+    "description": "Live Firestorm LLWindow.getInfo. Get information about the ui element specified by [\"path\"] Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLWindow_getPaths",
+    "description": "Live Firestorm LLWindow.getPaths. Send on [\"reply\"] an event in which [\"paths\"] is an array of valid LLView\npathnames. Optional [\"under\"] pathname specifies the base node under which\nto list; all nodes from root if no [\"under\"]. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "viewer_LLWindow_keyDown",
+    "description": "Live Firestorm LLWindow.keyDown. Given [\"keysym\"], [\"keycode\"] or [\"char\"], inject the specified keypress event.\n(integer keycode values, or keysym string from any addKeyName() call in\nhttps://github.com/secondlife/viewer/blob/develop/indra/llwindow/llkeyboard.cpp )\nSpecify optional [\"mask\"] as an array containing any of \"CTL\", \"ALT\",\n\"SHIFT\" or \"MAC_CONTROL\"; the corresponding modifier bits will be combined\nto form the mask used with the event. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLWindow_keyUp",
+    "description": "Live Firestorm LLWindow.keyUp. Given [\"keysym\"], [\"keycode\"] or [\"char\"], inject the specified key release event.\n(integer keycode values, or keysym string from any addKeyName() call in\nhttps://github.com/secondlife/viewer/blob/develop/indra/llwindow/llkeyboard.cpp )\nSpecify optional [\"mask\"] as an array containing any of \"CTL\", \"ALT\",\n\"SHIFT\" or \"MAC_CONTROL\"; the corresponding modifier bits will be combined\nto form the mask used with the event. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLWindow_mouseDown",
+    "description": "Live Firestorm LLWindow.mouseDown. Given [\"button\"], optional [\"path\"], optional [\"x\"] and [\"y\"], inject the requested mouse click event.\n(button values \"LEFT\", \"MIDDLE\", \"RIGHT\")\n[\"path\"] is as for LLUI::getInstance()->resolvePath(), described in\nhttps://github.com/secondlife/viewer/blob/develop/indra/llui/llui.h\nIf you omit [\"path\"], you must specify both [\"x\"] and [\"y\"].\nIf you specify [\"path\"] without both [\"x\"] and [\"y\"], will synthesize (x, y)\nin the center of the LLView selected by [\"path\"].\nYou may specify [\"path\"] with both [\"x\"] and [\"y\"], will use your (x, y).\nThis may cause the LLView selected by [\"path\"] to reject the event.\nOptional [\"reply\"] requests a reply event on the named LLEventPump.\nreply[\"error\"] isUndefined (None) on success, else an explanatory message.\nSpecify optional [\"mask\"] as an array containing any of \"CTL\", \"ALT\",\n\"SHIFT\" or \"MAC_CONTROL\"; the corresponding modifier bits will be combined\nto form the mask used with the event. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLWindow_mouseMove",
+    "description": "Live Firestorm LLWindow.mouseMove. Given optional [\"path\"], optional [\"x\"] and [\"y\"], inject the requested mouse movement event.\n[\"path\"] is as for LLUI::getInstance()->resolvePath(), described in\nhttps://github.com/secondlife/viewer/blob/develop/indra/llui/llui.h\nIf you omit [\"path\"], you must specify both [\"x\"] and [\"y\"].\nIf you specify [\"path\"] without both [\"x\"] and [\"y\"], will synthesize (x, y)\nin the center of the LLView selected by [\"path\"].\nYou may specify [\"path\"] with both [\"x\"] and [\"y\"], will use your (x, y).\nThis may cause the LLView selected by [\"path\"] to reject the event.\nOptional [\"reply\"] requests a reply event on the named LLEventPump.\nreply[\"error\"] isUndefined (None) on success, else an explanatory message.\nSpecify optional [\"mask\"] as an array containing any of \"CTL\", \"ALT\",\n\"SHIFT\" or \"MAC_CONTROL\"; the corresponding modifier bits will be combined\nto form the mask used with the event. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLWindow_mouseScroll",
+    "description": "Live Firestorm LLWindow.mouseScroll. Given an integer number of [\"clicks\"], inject the requested mouse scroll event.\n(positive clicks moves downward through typical content) Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_LLWindow_mouseUp",
+    "description": "Live Firestorm LLWindow.mouseUp. Given [\"button\"], optional [\"path\"], optional [\"x\"] and [\"y\"], inject the requested mouse release event.\n(button values \"LEFT\", \"MIDDLE\", \"RIGHT\")\n[\"path\"] is as for LLUI::getInstance()->resolvePath(), described in\nhttps://github.com/secondlife/viewer/blob/develop/indra/llui/llui.h\nIf you omit [\"path\"], you must specify both [\"x\"] and [\"y\"].\nIf you specify [\"path\"] without both [\"x\"] and [\"y\"], will synthesize (x, y)\nin the center of the LLView selected by [\"path\"].\nYou may specify [\"path\"] with both [\"x\"] and [\"y\"], will use your (x, y).\nThis may cause the LLView selected by [\"path\"] to reject the event.\nOptional [\"reply\"] requests a reply event on the named LLEventPump.\nreply[\"error\"] isUndefined (None) on success, else an explanatory message.\nSpecify optional [\"mask\"] as an array containing any of \"CTL\", \"ALT\",\n\"SHIFT\" or \"MAC_CONTROL\"; the corresponding modifier bits will be combined\nto form the mask used with the event. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_UI_call",
+    "description": "Live Firestorm UI.call. Invoke the operation named by [\"function\"], passing [\"parameter\"],\nas if from a user gesture on a menu -- or a button click. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect. Use ui_invoke_menu for validated menu callbacks; direct arbitrary callbacks are rejected to prevent viewer crashes.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "function": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "function"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_UI_getValue",
+    "description": "Live Firestorm UI.getValue. For the UI control identified by the path in [\"path\"], return the control's\ncurrent value as [\"value\"] reply. Supply viewer fields inside arguments; transport reply/reqid are supplied automatically. Dispatched does not prove effect.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "path": {}
+          },
+          "additionalProperties": true,
+          "required": [
+            "path"
+          ]
+        },
+        "expect_reply": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  }
+]

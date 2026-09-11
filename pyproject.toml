@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "firestorm-mcp"
+version = "0.2.0a1"
+description = "Local MCP access to Firestorm's live LEAP APIs and asset inspection workflows"
+requires-python = ">=3.11"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE", "THIRD_PARTY.md"]
+authors = [{name = "Firestorm MCP contributors"}]
+keywords = ["mcp", "firestorm", "second-life", "blender", "virtual-world", "ai-agent", "leap"]
+classifiers = ["Development Status :: 3 - Alpha", "Operating System :: Microsoft :: Windows", "Programming Language :: Python :: 3"]
+dependencies = ["mcp>=1.12,<2", "llsd>=1.2.4,<2", "pillow>=11", "psutil>=6,<8", "pywin32>=311; sys_platform == 'win32'"]
+
+[project.urls]
+Homepage = "https://github.com/AochiToxx/firestorm-mcp"
+Repository = "https://github.com/AochiToxx/firestorm-mcp"
+Issues = "https://github.com/AochiToxx/firestorm-mcp/issues"
+Documentation = "https://github.com/AochiToxx/firestorm-mcp#readme"
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[project.scripts]
+firestorm-mcp = "firestorm_mcp.server:main"
+firestorm-leap = "firestorm_mcp.bridge:main"
+firestorm-mcp-launch = "firestorm_mcp.launcher:main"
+firestorm-mcp-check = "firestorm_mcp.probe:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

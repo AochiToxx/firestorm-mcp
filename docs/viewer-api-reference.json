@@ -1,0 +1,718 @@
+{
+  "GroupChat": {
+    "desc": "API to enter, leave, send and intercept group chat messages",
+    "key": "op",
+    "name": "GroupChat",
+    "ops": [
+      {
+        "desc": "Leave a group chat in group with UUID [\"group_id\"]\nAssumes a prior successful startIM request.",
+        "name": "leaveGroupChat",
+        "required": {
+          "group_id": null
+        }
+      },
+      {
+        "desc": "send a [\"message\"] to group with UUID [\"group_id\"]",
+        "name": "sendGroupIM",
+        "required": {
+          "group_id": null,
+          "message": null
+        }
+      },
+      {
+        "desc": "Enter a group chat in group with UUID [\"group_id\"]\nAssumes the logged-in agent is already a member of this group.",
+        "name": "startGroupChat",
+        "required": {
+          "group_id": null
+        }
+      }
+    ]
+  },
+  "LLAgent": {
+    "desc": "LLAgent listener to (e.g.) teleport, sit, stand, etc.",
+    "key": "op",
+    "name": "LLAgent",
+    "ops": [
+      {
+        "desc": "Return screen position of the [\"avatar_id\"] avatar or own avatar if not specified\nreply contains \"x\", \"y\" coordinates and \"onscreen\" flag to indicate if it's actually in within the current window\navatar render position is used as the point",
+        "name": "getAgentScreenPos",
+        "required": {
+          "reply": null
+        }
+      },
+      {
+        "desc": "Return information about [\"item_id\"] animation",
+        "name": "getAnimationInfo",
+        "required": {
+          "item_id": null,
+          "reply": null
+        }
+      },
+      {
+        "desc": "Send information about current state of the autopilot system to [\"reply\"]:\n[\"enabled\"]: boolean indicating whether or not autopilot is enabled\n[\"target_global\"]: array of target global {x, y, z} position\n[\"leader_id\"]: uuid of target autopilot is following\n[\"stop_distance\"]: maximum stop distance from target\n[\"target_distance\"]: last known distance from target\n[\"use_rotation\"]: boolean indicating if autopilot has a target facing rotation\n[\"target_facing\"]: array of {x, y} target direction to face\n[\"rotation_threshold\"]: target maximum angle from target facing rotation\n[\"behavior_name\"]: name of the autopilot behavior",
+        "name": "getAutoPilot",
+        "required": {
+          "reply": null
+        }
+      },
+      {
+        "desc": "Send information about the agent's groups on [\"reply\"]:\n[\"groups\"]: array of group information\n[\"id\"]: group id\n[\"name\"]: group name\n[\"insignia\"]: group insignia texture id\n[\"notices\"]: boolean indicating if this user accepts notices from this group\n[\"display\"]: boolean indicating if this group is listed in the user's profile\n[\"contrib\"]: user's land contribution to this group\n",
+        "name": "getGroups",
+        "required": {
+          "reply": null
+        }
+      },
+      {
+        "desc": "Return your own avatar ID",
+        "name": "getID",
+        "required": {
+          "reply": null
+        }
+      },
+      {
+        "desc": "Return result set key [\"result\"] for nearby avatars in a range of [\"dist\"]\nif [\"dist\"] is not specified, 'RenderFarClip' setting is used\nreply contains \"result\" table with \"id\", \"name\", \"global_pos\", \"region_pos\", \"region_id\" fields",
+        "name": "getNearbyAvatarsList",
+        "required": {
+          "reply": null
+        }
+      },
+      {
+        "desc": "Return result set key [\"result\"] for nearby objects in a range of [\"dist\"]\nif [\"dist\"] is not specified, 'RenderFarClip' setting is used\nreply contains \"result\" table with \"id\", \"global_pos\", \"region_pos\", \"region_id\" fields",
+        "name": "getNearbyObjectsList",
+        "required": {
+          "reply": null
+        }
+      },
+      {
+        "desc": "Send information about the agent's position and orientation on [\"reply\"]:\n[\"region\"]: array of region {x, y, z} position\n[\"global\"]: array of global {x, y, z} position\n[\"euler\"]: map of {roll, pitch, yaw}\n[\"quat\"]:  array of [x, y, z, w] quaternion values",
+        "name": "getPosition",
+        "required": {
+          "reply": null
+        }
+      },
+      {
+        "desc": "[\"type\"]: number to indicate the lookAt type, 0 to clear\n[\"obj_uuid\"]: id of object to look at, use this or [\"position\"] to indicate the target\n[\"position\"]: region position {x, y, z} where to find closest object or avatar to look at",
+        "name": "lookAt",
+        "required": null
+      },
+      {
+        "desc": "Play [\"item_id\"] animation locally (by default) or [\"inworld\"] (when set to true)",
+        "name": "playAnimation",
+        "required": {
+          "item_id": null,
+          "reply": null
+        }
+      },
+      {
+        "desc": "Reset Follow camera params",
+        "name": "removeCameraParams",
+        "required": null
+      },
+      {
+        "desc": "[\"obj_uuid\"]: id of object to sit on, use this or [\"position\"] to indicate the sit target[\"position\"]: region position {x, y, z} where to find closest object to sit on",
+        "name": "requestSit",
+        "required": null
+      },
+      {
+        "desc": "Ask to stand up",
+        "name": "requestStand",
+        "required": null
+      },
+      {
+        "desc": "Teleport: [\"regionname\"], [\"x\"], [\"y\"], [\"z\"]\nIf [\"skip_confirmation\"] is true, use LLURLDispatcher rather than LLCommandDispatcher.",
+        "name": "requestTeleport",
+        "required": null
+      },
+      {
+        "desc": "[\"obj_uuid\"]: id of object to touch, use this or [\"position\"] to indicate the object to touch[\"position\"]: region position {x, y, z} where to find closest object to touch[\"face\"]: optional object face number to touch[Default: 0]",
+        "name": "requestTouch",
+        "required": null
+      },
+      {
+        "desc": "Set the agent to a fixed orientation (optionally specify [\"lookat\"] = array of [x, y, z])",
+        "name": "resetAxes",
+        "required": null
+      },
+      {
+        "desc": "Update target for currently running autopilot:\n[\"target_global\"]: array of target global {x, y, z} position",
+        "name": "setAutoPilotTarget",
+        "required": null
+      },
+      {
+        "desc": "Set Follow camera params, and then activate it:\n[\"camera_pos\"]: vector3, camera position in region coordinates\n[\"focus_pos\"]: vector3, what the camera is aimed at (in region coordinates)\n[\"focus_offset\"]: vector3, adjusts the camera focus position relative to the target, default is (1, 0, 0)\n[\"distance\"]: float (meters), distance the camera wants to be from its target, default is 3\n[\"focus_threshold\"]: float (meters), sets the radius of a sphere around the camera's target position within which its focus is not affected by target motion, default is 1\n[\"camera_threshold\"]: float (meters), sets the radius of a sphere around the camera's ideal position within which it is not affected by target motion, default is 1\n[\"focus_lag\"]: float (seconds), how much the camera lags as it tries to aim towards the target, default is 0.1\n[\"camera_lag\"]: float (seconds), how much the camera lags as it tries to move towards its 'ideal' position, default is 0.1\n[\"camera_pitch\"]: float (degrees), adjusts the angular amount that the camera aims straight ahead vs. straight down, maintaining the same distance, default is 0\n[\"behindness_angle\"]: float (degrees), sets the angle in degrees within which the camera is not constrained by changes in target rotation, default is 10\n[\"behindness_lag\"]: float (seconds), sets how strongly the camera is forced to stay behind the target if outside of behindness angle, default is 0\n[\"camera_locked\"]: bool, locks the camera position so it will not move\n[\"focus_locked\"]: bool, locks the camera focus so it will not move",
+        "name": "setCameraParams",
+        "required": null
+      },
+      {
+        "desc": "Turns on or off scripted control of the camera using boolean [\"active\"]",
+        "name": "setFollowCamActive",
+        "required": {
+          "active": null
+        }
+      },
+      {
+        "desc": "Start the autopilot system using the following parameters:\n[\"target_global\"]: array of target global {x, y, z} position\n[\"stop_distance\"]: maximum stop distance from target [default: autopilot guess]\n[\"target_rotation\"]: array of [x, y, z, w] quaternion values [default: no target]\n[\"rotation_threshold\"]: target maximum angle from target facing rotation [default: 0.03 radians]\n[\"behavior_name\"]: name of the autopilot behavior [default: \"\"]\n[\"allow_flying\"]: allow flying during autopilot [default: True]\nevent with [\"success\"] flag is sent to 'LLAutopilot' event pump, when auto pilot is terminated",
+        "name": "startAutoPilot",
+        "required": {
+          "target_global": null
+        }
+      },
+      {
+        "desc": "[\"leader_id\"]: uuid of target to follow using the autopilot system (optional with avatar_name)\n[\"avatar_name\"]: avatar name to follow using the autopilot system (optional with leader_id)\n[\"allow_flying\"]: allow flying during autopilot [default: True]\n[\"stop_distance\"]: maximum stop distance from target [default: autopilot guess]",
+        "name": "startFollowPilot",
+        "required": {
+          "reply": null
+        }
+      },
+      {
+        "desc": "Stop playing [\"item_id\"] animation",
+        "name": "stopAnimation",
+        "required": {
+          "item_id": null,
+          "reply": null
+        }
+      },
+      {
+        "desc": "Stop the autopilot system:\n[\"user_cancel\"] indicates whether or not to act as though user canceled autopilot [default: false]",
+        "name": "stopAutoPilot",
+        "required": null
+      }
+    ]
+  },
+  "LLAppViewer": {
+    "desc": "LLAppViewer listener to (e.g.) request shutdown",
+    "key": "op",
+    "name": "LLAppViewer",
+    "ops": [
+      {
+        "desc": "Quit abruptly",
+        "name": "forceQuit",
+        "required": null
+      },
+      {
+        "desc": "Ask to quit nicely",
+        "name": "requestQuit",
+        "required": null
+      }
+    ]
+  },
+  "LLAppearance": {
+    "desc": "API to wear a specified outfit and wear/remove individual items",
+    "key": "op",
+    "name": "LLAppearance",
+    "ops": [
+      {
+        "desc": "Detach items by id: [items_id]",
+        "name": "detachItems",
+        "required": {
+          "items_id": null
+        }
+      },
+      {
+        "desc": "Return the table of items with info(id : name, wearable_type, is_worn) inside specified outfit folder",
+        "name": "getOutfitItems",
+        "required": null
+      },
+      {
+        "desc": "Return the table with Outfits info(id and name)",
+        "name": "getOutfitsList",
+        "required": null
+      },
+      {
+        "desc": "Wear items by id: [items_id]",
+        "name": "wearItems",
+        "required": {
+          "items_id": null,
+          "replace": null
+        }
+      },
+      {
+        "desc": "Wear outfit by folder id: [\"folder_id\"] OR by folder name: [\"folder_name\"]\nWhen [\"append\"] is true, outfit will be added to COF\notherwise it will replace current oufit",
+        "name": "wearOutfit",
+        "required": null
+      }
+    ]
+  },
+  "LLCommandDispatcher": {
+    "desc": "Access to LLCommandHandler commands",
+    "key": "op",
+    "name": "LLCommandDispatcher",
+    "ops": [
+      {
+        "desc": "Execute a command registered as an LLCommandHandler,\npassing any required parameters:\n[\"cmd\"] string command name\n[\"params\"] array of parameters, as if from components of URL path\n[\"query\"] map of parameters, as if from ?key1=val&key2=val\n[\"trusted\"] boolean indicating trusted browser [default true]",
+        "name": "dispatch",
+        "required": null
+      },
+      {
+        "desc": "Post to [\"reply\"] a map of registered LLCommandHandler instances, containing\nname key and (e.g.) untrusted flag",
+        "name": "enumerate",
+        "required": {
+          "reply": null
+        }
+      }
+    ]
+  },
+  "LLFloaterAbout": {
+    "desc": "LLFloaterAbout listener to retrieve About box info",
+    "key": "op",
+    "name": "LLFloaterAbout",
+    "ops": [
+      {
+        "desc": "Request an LLSD::Map containing information used to populate About box",
+        "name": "getInfo",
+        "required": {
+          "reply": null
+        }
+      }
+    ]
+  },
+  "LLFloaterReg": {
+    "desc": "LLFloaterReg listener to (e.g.) show/hide LLFloater instances",
+    "key": "op",
+    "name": "LLFloaterReg",
+    "ops": [
+      {
+        "desc": "Simulate clicking the named [\"button\"] in the visible floater named in [\"name\"]",
+        "name": "clickButton",
+        "required": {
+          "button": null,
+          "name": null
+        }
+      },
+      {
+        "desc": "Return on [\"reply\"] data about all registered LLFloaterReg floater names",
+        "name": "getBuildMap",
+        "required": {
+          "reply": null
+        }
+      },
+      {
+        "desc": "Ask to hide the floater specified in [\"name\"]",
+        "name": "hideInstance",
+        "required": {
+          "name": null
+        }
+      },
+      {
+        "desc": "Return on [\"reply\"] an event whose [\"visible\"] indicates the visibility of the floater specified in [\"name\"]",
+        "name": "instanceVisible",
+        "required": {
+          "name": null
+        }
+      },
+      {
+        "desc": "Ask to display the floater specified in [\"name\"]",
+        "name": "showInstance",
+        "required": {
+          "name": null
+        }
+      },
+      {
+        "desc": "Ask to toggle the state of the floater specified in [\"name\"]",
+        "name": "toggleInstance",
+        "required": {
+          "name": null
+        }
+      }
+    ]
+  },
+  "LLGesture": {
+    "desc": "LLGesture listener interface to control gestures",
+    "key": "op",
+    "name": "LLGesture",
+    "ops": [
+      {
+        "desc": "Return information about the agent's available gestures [\"reply\"]:\n[\"gestures\"]: a dictionary with UUID strings as keys\n  and the following dict values for each entry:\n     [\"name\"]: name of the gesture, may be empty\n     [\"trigger\"]: trigger string used to invoke via user chat, may be empty\n     [\"playing\"]: true or false indicating the playing state",
+        "name": "getActiveGestures",
+        "required": {
+          "reply": null
+        }
+      },
+      {
+        "desc": "[\"id\"]: UUID of the gesture to query.  Returns True or False in [\"playing\"] value of the result",
+        "name": "isGesturePlaying",
+        "required": null
+      },
+      {
+        "desc": "[\"id\"]: UUID of the gesture to start playing",
+        "name": "startGesture",
+        "required": null
+      },
+      {
+        "desc": "[\"id\"]: UUID of the gesture to stop",
+        "name": "stopGesture",
+        "required": null
+      }
+    ]
+  },
+  "LLInventory": {
+    "desc": "API for interactions with viewer Inventory items",
+    "key": "op",
+    "name": "LLInventory",
+    "ops": [
+      {
+        "desc": "Return result set keys [\"categories\"] and [\"items\"] for the descendants\nof the [\"folder_id\"], if it passes specified filters:\n[\"name\"] is a substring of object's name,\n[\"desc\"] is a substring of object's description,\nasset [\"type\"] corresponds to the string name of the object's asset type\n[\"limit\"] sets item count limit in result set (default unlimited)\n[\"filter_links\"]: EXCLUDE_LINKS - don't show links, ONLY_LINKS - only show links, INCLUDE_LINKS - show links too (default)",
+        "name": "collectDescendantsIf",
+        "required": {
+          "folder_id": null,
+          "reply": null
+        }
+      },
+      {
+        "desc": "Return the table of asset type names, contained in [\"names\"]\n",
+        "name": "getAssetTypeNames",
+        "required": {
+          "reply": null
+        }
+      },
+      {
+        "desc": "Return the UUID of the folder by specified folder type name, for example:\n\"Textures\", \"My outfits\", \"Sounds\" and other basic folders which have associated type",
+        "name": "getBasicFolderID",
+        "required": {
+          "ft_name": null,
+          "reply": null
+        }
+      },
+      {
+        "desc": "Return result set keys [\"categories\"] and [\"items\"] for the direct\ndescendants of the [\"folder_id\"]",
+        "name": "getDirectDescendants",
+        "required": {
+          "folder_id": null,
+          "reply": null
+        }
+      },
+      {
+        "desc": "Return the table of folder type names, contained in [\"names\"]\n",
+        "name": "getFolderTypeNames",
+        "required": {
+          "reply": null
+        }
+      },
+      {
+        "desc": "Return information about items or folders defined in [\"item_ids\"]:\nreply will contain [\"items\"] and [\"categories\"] result set keys",
+        "name": "getItemsInfo",
+        "required": {
+          "item_ids": null,
+          "reply": null
+        }
+      }
+    ]
+  },
+  "LLNotifications": {
+    "desc": "LLNotifications listener to (e.g.) pop up a notification",
+    "key": "op",
+    "name": "LLNotifications",
+    "ops": [
+      {
+        "desc": "Cancel notification [\"uuid\"]",
+        "name": "cancel",
+        "required": {
+          "uuid": null
+        }
+      },
+      {
+        "desc": "Forward to [\"pump\"] future notifications on channel [\"channel\"]\naccording to boolean [\"forward\"]. When enabled, only types matching\n[\"types\"] are forwarded, as follows:\nomitted or undefined: forward all notifications\nstring: forward only the specific named [sig]type\narray of string: forward any notification matching any named [sig]type.\nWhen boolean [\"respond\"] is true, we auto-respond to each forwarded\nnotification.",
+        "name": "forward",
+        "required": {
+          "channel": null
+        }
+      },
+      {
+        "desc": "Ignore future notification [\"name\"]\n(from <notification name= > in notifications.xml)\naccording to boolean [\"ignore\"].\nIf [\"name\"] is omitted or undefined, [un]ignore all future notifications.\nNote that ignored notifications are not forwarded unless intercepted before\nthe \"Ignore\" channel.",
+        "name": "ignore",
+        "required": null
+      },
+      {
+        "desc": "Post to [\"reply\"] an array of info on notifications in channel [\"channel\"]",
+        "name": "listChannelNotifications",
+        "required": {
+          "channel": null,
+          "reply": null
+        }
+      },
+      {
+        "desc": "Post to [\"reply\"] a map of info on existing channels",
+        "name": "listChannels",
+        "required": {
+          "reply": null
+        }
+      },
+      {
+        "desc": "Add a notification with specified [\"name\"], [\"substitutions\"] and [\"payload\"].\nIf optional [\"reply\"] specified, arrange to send user response on that LLEventPump.",
+        "name": "requestAdd",
+        "required": null
+      },
+      {
+        "desc": "Respond to notification [\"uuid\"] with data in [\"response\"]",
+        "name": "respond",
+        "required": {
+          "uuid": null
+        }
+      }
+    ]
+  },
+  "LLPipeline": {
+    "desc": "API to te rendering pipeline.",
+    "key": "op",
+    "name": "LLPipeline",
+    "ops": [
+      {
+        "desc": "Turn off all rendering features.",
+        "name": "disableAllRenderFeatures",
+        "required": null
+      },
+      {
+        "desc": "Turn off all info displays.",
+        "name": "disableAllRenderInfoDisplays",
+        "required": null
+      },
+      {
+        "desc": "Turn off all rendering types.",
+        "name": "disableAllRenderTypes",
+        "required": null
+      },
+      {
+        "desc": "Turn on all rendering features.",
+        "name": "enableAllRenderFeatures",
+        "required": null
+      },
+      {
+        "desc": "Turn on all info displays.",
+        "name": "enableAllRenderInfoDisplays",
+        "required": null
+      },
+      {
+        "desc": "Turn on all rendering types.",
+        "name": "enableAllRenderTypes",
+        "required": null
+      },
+      {
+        "desc": "Check if rendering [\"feature\"] is enabled:\nSee: llviewermenu.cpp:render_feature_from_string for list of available features.",
+        "name": "hasRenderFeature",
+        "required": {
+          "reply": null
+        }
+      },
+      {
+        "desc": "Check if info [\"display\"] is enabled:\nSee: llviewermenu.cpp:info_display_from_string for list of available displays.",
+        "name": "hasRenderInfoDisplay",
+        "required": {
+          "reply": null
+        }
+      },
+      {
+        "desc": "Check if rendering [\"type\"] is enabled:\nSee: llviewermenu.cpp:render_type_from_string for list of available types.",
+        "name": "hasRenderType",
+        "required": {
+          "reply": null
+        }
+      },
+      {
+        "desc": "Toggle rendering [\"features\"]:\nSee: llviewermenu.cpp:feature_from_string for list of available features.",
+        "name": "toggleRenderFeatures",
+        "required": null
+      },
+      {
+        "desc": "Toggle info [\"displays\"]:\nSee: llviewermenu.cpp:info_display_from_string for list of available displays.",
+        "name": "toggleRenderInfoDisplays",
+        "required": null
+      },
+      {
+        "desc": "Toggle rendering [\"types\"]:\nSee: llviewermenu.cpp:render_type_from_string for list of available types.",
+        "name": "toggleRenderTypes",
+        "required": null
+      }
+    ]
+  },
+  "LLStartUp": {
+    "desc": "Access e.g. LLStartup::postStartupState()",
+    "key": "op",
+    "name": "LLStartUp",
+    "ops": [
+      {
+        "desc": "Reply with array of EStartupState string names",
+        "name": "getStateTable",
+        "required": null
+      },
+      {
+        "desc": "Refresh \"StartupState\" listeners with current startup state",
+        "name": "postStartupState",
+        "required": null
+      }
+    ]
+  },
+  "LLTeleportHandler": {
+    "desc": "Low-level teleport API",
+    "key": "op",
+    "name": "LLTeleportHandler",
+    "ops": [
+      {
+        "desc": "Teleport to specified [\"regionname\"] at\nspecified region-relative [\"x\"], [\"y\"], [\"z\"].\nIf [\"regionname\"] omitted, teleport to GLOBAL\ncoordinates [\"x\"], [\"y\"], [\"z\"].",
+        "name": "teleport",
+        "required": null
+      }
+    ]
+  },
+  "LLURLDispatcher": {
+    "desc": "Internal URL handling",
+    "key": "op",
+    "name": "LLURLDispatcher",
+    "ops": [
+      {
+        "desc": "At startup time or on clicks in internal web browsers,\nteleport, open map, or run requested command.\n[\"url\"] string url to dispatch\n[\"trusted\"] boolean indicating trusted browser [default true]",
+        "name": "dispatch",
+        "required": null
+      },
+      {
+        "desc": "Dispatch [\"url\"] as if from an edit field.",
+        "name": "dispatchFromTextEditor",
+        "required": null
+      },
+      {
+        "desc": "Dispatch [\"url\"] as if from a right-click on a hot link.",
+        "name": "dispatchRightClick",
+        "required": null
+      }
+    ]
+  },
+  "LLViewerControl": {
+    "desc": "LLViewerControl listener: set, toggle or set default for various controls",
+    "key": "op",
+    "name": "LLViewerControl",
+    "ops": [
+      {
+        "desc": "Query [\"group\"] control [\"key\"], replying on LLEventPump [\"reply\"]\n[\"group\"] is one of \"CrashSettings\", \"Global\", \"PerAccount\", \"Warnings\"\n",
+        "name": "get",
+        "required": {
+          "group": null,
+          "key": null,
+          "reply": null
+        }
+      },
+      {
+        "desc": "Send on LLEventPump [\"reply\"] an array [\"groups\"] of valid group names",
+        "name": "groups",
+        "required": {
+          "reply": null
+        }
+      },
+      {
+        "desc": "Set [\"group\"] control [\"key\"] to optional value [\"value\"]\nIf [\"value\"] omitted, set to control's defined default value\n[\"group\"] is one of \"CrashSettings\", \"Global\", \"PerAccount\", \"Warnings\"\nIf [\"reply\"] requested, send new [\"value\"] on specified LLEventPump\n",
+        "name": "set",
+        "required": {
+          "group": null,
+          "key": null
+        }
+      },
+      {
+        "desc": "Toggle [\"group\"] control [\"key\"], if boolean\n[\"group\"] is one of \"CrashSettings\", \"Global\", \"PerAccount\", \"Warnings\"\nIf [\"reply\"] requested, send new [\"value\"] on specified LLEventPump\n",
+        "name": "toggle",
+        "required": {
+          "group": null,
+          "key": null
+        }
+      },
+      {
+        "desc": "For [\"group\"], send on LLEventPump [\"reply\"] an array [\"vars\"],\neach of whose entries looks like:\n  [\"name\"], [\"type\"], [\"value\"], [\"comment\"]\n[\"group\"] is one of \"CrashSettings\", \"Global\", \"PerAccount\", \"Warnings\"\n",
+        "name": "vars",
+        "required": {
+          "group": null,
+          "reply": null
+        }
+      }
+    ]
+  },
+  "LLViewerWindow": {
+    "desc": "LLViewerWindow listener to (e.g.) save a screenshot",
+    "key": "op",
+    "name": "LLViewerWindow",
+    "ops": [
+      {
+        "desc": "Resize the window: [\"w\"], [\"h\"]",
+        "name": "requestReshape",
+        "required": null
+      },
+      {
+        "desc": "Save screenshot: [\"filename\"], [\"width\"], [\"height\"], [\"showui\"], [\"showhud\"], [\"rebuild\"], [\"type\"]\ntype: \"COLOR\", \"DEPTH\"\nPost on [\"reply\"] an event containing [\"ok\"]",
+        "name": "saveSnapshot",
+        "required": {
+          "filename": "",
+          "reply": ""
+        }
+      }
+    ]
+  },
+  "LLWindow": {
+    "desc": "Inject input events into the LLWindow instance",
+    "key": "op",
+    "name": "LLWindow",
+    "ops": [
+      {
+        "desc": "Get information about the ui element specified by [\"path\"]",
+        "name": "getInfo",
+        "required": {
+          "reply": null
+        }
+      },
+      {
+        "desc": "Send on [\"reply\"] an event in which [\"paths\"] is an array of valid LLView\npathnames. Optional [\"under\"] pathname specifies the base node under which\nto list; all nodes from root if no [\"under\"].",
+        "name": "getPaths",
+        "required": {
+          "reply": null
+        }
+      },
+      {
+        "desc": "Given [\"keysym\"], [\"keycode\"] or [\"char\"], inject the specified keypress event.\n(integer keycode values, or keysym string from any addKeyName() call in\nhttps://github.com/secondlife/viewer/blob/develop/indra/llwindow/llkeyboard.cpp )\nSpecify optional [\"mask\"] as an array containing any of \"CTL\", \"ALT\",\n\"SHIFT\" or \"MAC_CONTROL\"; the corresponding modifier bits will be combined\nto form the mask used with the event.",
+        "name": "keyDown",
+        "required": null
+      },
+      {
+        "desc": "Given [\"keysym\"], [\"keycode\"] or [\"char\"], inject the specified key release event.\n(integer keycode values, or keysym string from any addKeyName() call in\nhttps://github.com/secondlife/viewer/blob/develop/indra/llwindow/llkeyboard.cpp )\nSpecify optional [\"mask\"] as an array containing any of \"CTL\", \"ALT\",\n\"SHIFT\" or \"MAC_CONTROL\"; the corresponding modifier bits will be combined\nto form the mask used with the event.",
+        "name": "keyUp",
+        "required": null
+      },
+      {
+        "desc": "Given [\"button\"], optional [\"path\"], optional [\"x\"] and [\"y\"], inject the requested mouse click event.\n(button values \"LEFT\", \"MIDDLE\", \"RIGHT\")\n[\"path\"] is as for LLUI::getInstance()->resolvePath(), described in\nhttps://github.com/secondlife/viewer/blob/develop/indra/llui/llui.h\nIf you omit [\"path\"], you must specify both [\"x\"] and [\"y\"].\nIf you specify [\"path\"] without both [\"x\"] and [\"y\"], will synthesize (x, y)\nin the center of the LLView selected by [\"path\"].\nYou may specify [\"path\"] with both [\"x\"] and [\"y\"], will use your (x, y).\nThis may cause the LLView selected by [\"path\"] to reject the event.\nOptional [\"reply\"] requests a reply event on the named LLEventPump.\nreply[\"error\"] isUndefined (None) on success, else an explanatory message.\nSpecify optional [\"mask\"] as an array containing any of \"CTL\", \"ALT\",\n\"SHIFT\" or \"MAC_CONTROL\"; the corresponding modifier bits will be combined\nto form the mask used with the event.",
+        "name": "mouseDown",
+        "required": null
+      },
+      {
+        "desc": "Given optional [\"path\"], optional [\"x\"] and [\"y\"], inject the requested mouse movement event.\n[\"path\"] is as for LLUI::getInstance()->resolvePath(), described in\nhttps://github.com/secondlife/viewer/blob/develop/indra/llui/llui.h\nIf you omit [\"path\"], you must specify both [\"x\"] and [\"y\"].\nIf you specify [\"path\"] without both [\"x\"] and [\"y\"], will synthesize (x, y)\nin the center of the LLView selected by [\"path\"].\nYou may specify [\"path\"] with both [\"x\"] and [\"y\"], will use your (x, y).\nThis may cause the LLView selected by [\"path\"] to reject the event.\nOptional [\"reply\"] requests a reply event on the named LLEventPump.\nreply[\"error\"] isUndefined (None) on success, else an explanatory message.\nSpecify optional [\"mask\"] as an array containing any of \"CTL\", \"ALT\",\n\"SHIFT\" or \"MAC_CONTROL\"; the corresponding modifier bits will be combined\nto form the mask used with the event.",
+        "name": "mouseMove",
+        "required": null
+      },
+      {
+        "desc": "Given an integer number of [\"clicks\"], inject the requested mouse scroll event.\n(positive clicks moves downward through typical content)",
+        "name": "mouseScroll",
+        "required": null
+      },
+      {
+        "desc": "Given [\"button\"], optional [\"path\"], optional [\"x\"] and [\"y\"], inject the requested mouse release event.\n(button values \"LEFT\", \"MIDDLE\", \"RIGHT\")\n[\"path\"] is as for LLUI::getInstance()->resolvePath(), described in\nhttps://github.com/secondlife/viewer/blob/develop/indra/llui/llui.h\nIf you omit [\"path\"], you must specify both [\"x\"] and [\"y\"].\nIf you specify [\"path\"] without both [\"x\"] and [\"y\"], will synthesize (x, y)\nin the center of the LLView selected by [\"path\"].\nYou may specify [\"path\"] with both [\"x\"] and [\"y\"], will use your (x, y).\nThis may cause the LLView selected by [\"path\"] to reject the event.\nOptional [\"reply\"] requests a reply event on the named LLEventPump.\nreply[\"error\"] isUndefined (None) on success, else an explanatory message.\nSpecify optional [\"mask\"] as an array containing any of \"CTL\", \"ALT\",\n\"SHIFT\" or \"MAC_CONTROL\"; the corresponding modifier bits will be combined\nto form the mask used with the event.",
+        "name": "mouseUp",
+        "required": null
+      }
+    ]
+  },
+  "UI": {
+    "desc": "LLUICtrl::CommitCallbackRegistry listener.\nCapable of invoking any function (with parameter) you can specify in XUI.",
+    "key": "op",
+    "name": "UI",
+    "ops": [
+      {
+        "desc": "Invoke the operation named by [\"function\"], passing [\"parameter\"],\nas if from a user gesture on a menu -- or a button click.",
+        "name": "call",
+        "required": {
+          "function": null
+        }
+      },
+      {
+        "desc": "For the UI control identified by the path in [\"path\"], return the control's\ncurrent value as [\"value\"] reply.",
+        "name": "getValue",
+        "required": {
+          "path": null,
+          "reply": null
+        }
+      }
+    ]
+  }
+}
