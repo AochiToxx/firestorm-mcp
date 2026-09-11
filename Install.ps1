@@ -6,6 +6,10 @@ if (!(Test-Path -LiteralPath $venvPython)) {
     & $Python -m venv (Join-Path $projectDir '.venv')
     if ($LASTEXITCODE) { throw 'Python 3.11 or newer is required. Install Python and retry.' }
 }
+# Python's bundled pip may predate archive-extraction security fixes.
+# Upgrade only this project's environment, never the user's global Python.
+& $venvPython -m pip --disable-pip-version-check install --upgrade 'pip>=26.2,<27'
+if ($LASTEXITCODE) { throw 'Could not update the isolated package installer.' }
 if ($Development) {
     Push-Location -LiteralPath $projectDir
     try { & $venvPython -m pip --disable-pip-version-check install -e '.[test]' }

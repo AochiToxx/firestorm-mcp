@@ -17,7 +17,7 @@ with tempfile.TemporaryDirectory() as state:
             if len(name) > 64:
                 name = name[:53] + '_' + hashlib.sha256(name.encode()).hexdigest()[:10]
             tools.dynamic[name] = (api, op)
-    definitions = [entry.model_dump(exclude_none=True) for entry in tools.definitions_list()]
+    definitions = [entry.model_dump(exclude_none=True, by_alias=True) for entry in tools.definitions_list()]
     (root / 'docs/tool-catalog.json').write_text(json.dumps(definitions, indent=2) + '\n', encoding='utf-8')
     lines = ['# Tool reference', '',
         'Generated from the current workflow definitions and historical Firestorm 7.2.4.80712 API discovery. '

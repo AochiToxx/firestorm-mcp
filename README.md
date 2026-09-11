@@ -4,7 +4,9 @@
 
 [Downloads](#downloads) · [Install](#install-on-windows) · [Capabilities](#what-can-it-do-today) · [Agent quick start](#for-ai-agents) · [Tool reference](docs/TOOLS.md) · [Contribute](CONTRIBUTING.md) · [Known limits](#known-limits)
 
-**Status:** `0.2.0a1` · Windows alpha · Python 3.11+ · MIT licence
+**Download:** `0.2.0a1` · **Development:** `0.3.0a1` (unreleased) · Windows alpha · Python 3.11+ · MIT licence
+
+The development branch adds MCP SDK v2 and protocol compatibility through `2026-07-28`, a compact tool profile and structured results. The release downloads below retain `0.2.0a1` behavior until a new release is verified. See the [compatibility audit and remaining work](docs/COMPATIBILITY.md).
 
 Firestorm MCP is an independent, community-oriented **Model Context Protocol (MCP)** server. It connects to an installed Firestorm viewer through the viewer's **LEAP** interface. Your agent works through the same viewer you can see and control; no separate bot avatar or custom viewer build is required.
 
@@ -21,6 +23,8 @@ Viewer-owned LEAP helper ────── Firestorm viewer ────── 
 ```
 
 The project currently defines **42 workflow tools**. A previously tested, signed-in Firestorm **7.2.4.80712** session exposed **94 additional operations across 18 APIs**, for **136 tools** in that session. Before login, fewer operations were available. These are discovery counts, not a claim that every consequential operation has been live-tested. Always refresh capabilities on the viewer you actually use.
+
+In development `0.3.0a1`, startup exposes the 42 workflow tools immediately, even with a stalled viewer. Call `capabilities_refresh` to discover viewer operations. Use `--tool-profile compact` when combining this server with other MCPs or using hosts with tool-count limits: the list stays at 42 and `viewer_call` retains access to all discovered operations. The default `all` profile adds individual viewer tools after refresh. Compact mode changes discovery presentation, not permissions.
 
 ## Downloads
 

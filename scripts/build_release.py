@@ -1,4 +1,5 @@
 """Create an allowlisted source ZIP and hashes, excluding runtime/user evidence."""
+import argparse
 import hashlib
 from pathlib import Path
 import re
@@ -6,6 +7,9 @@ import tomllib
 import zipfile
 
 root = Path(__file__).resolve().parents[1]
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--output-dir', type=Path, default=root / 'dist')
+args = parser.parse_args()
 version = tomllib.loads((root / 'pyproject.toml').read_text())['project']['version']
 root_names = {'README.md', 'LICENSE', 'CONTRIBUTING.md', 'AGENTS.md', 'SECURITY.md',
               'CHANGELOG.md', 'THIRD_PARTY.md', 'pyproject.toml', 'requirements-lock.txt',
@@ -31,8 +35,8 @@ for path in sorted(root.rglob('*')):
     if re.search(r'gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{40,}|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----', text):
         raise ValueError(f'Credential-like content in {relative}')
     files.append((path, relative))
-destination = root / 'dist'
-destination.mkdir(exist_ok=True)
+destination = args.output_dir.resolve()
+destination.mkdir(parents=True, exist_ok=True)
 archive = destination / f'firestorm-mcp-{version}-source.zip'
 with zipfile.ZipFile(archive, 'w', compression=zipfile.ZIP_DEFLATED) as bundle:
     for path, relative in files:

@@ -2,6 +2,16 @@
 
 ## Current package checks
 
+Development `0.3.0a1`, checked in isolation on 11 September 2026 with Windows/Python 3.12 and MCP SDK 2.2.0: **45 tests passed**. New wire-level tests exercise five protocol revisions, including direct `server/discover` on `2026-07-28`, legacy handshakes, clean UTF-8 stdio, structured and PNG results, strict input rejection, catalog-change notifications in both eras, compact discovery and cancellation of a queued viewer call. These tests use temporary files and a synthetic loopback bridge; none contacts an actual viewer.
+
+The pinned official MCP Inspector **2.6.0** independently listed 42 tools with **zero strict schema findings** and completed an offline connection-status call. The dependency advisory scan found legacy pip advisories in the freshly bootstrapped environment; updating that environment to pip 26.2.1 cleared the reported findings. The scan covered the development environment's installed third-party packages; the editable project itself was skipped by the advisory service and is covered by code/tests instead. This is a point-in-time advisory check, not proof of absence of vulnerabilities. The source installer now updates only its dedicated pip to `>=26.2,<27` before installing dependencies.
+
+A separate **SDK v1.30.0 client** also connected to the new server over stdio, negotiated `2025-11-25`, listed 42 tools and read disconnected status. The development wheel and source distribution passed `twine check`; the wheel installed in a fresh temporary environment and passed its current-protocol offline probe with the packaged LEAP entry present. No running viewer, shared configuration or consumer installation was modified.
+
+The release record below belongs to `0.2.0a1`; it must not be treated as live acceptance of the development migration. The new source is kept separate from active consumer installations. See the [compatibility audit](COMPATIBILITY.md).
+
+## Released 0.2.0a1 package checks
+
 Local verification on 11 September 2026 using Windows and Python 3.12: `python -m pytest -q` passed **35 tests**. The built wheel installed into a fresh temporary environment, initialized the real MCP SDK, listed 42 workflow tools and reported the deliberately isolated viewer state as disconnected (exit 2). Its packaged LEAP entry was present. Source/wheel metadata checks passed. The allowlisted source ZIP and tracked-file review excluded private runtime and consumer evidence. CI runs isolated tests; no GitHub job should connect to a real viewer or user account.
 
 Tests cover byte-counted binary/notation LLSD, fragmented input, exact duplicate-block recovery, malformed frames, reply correlation and late replies, lease ownership, loopback authentication/Origin rejection, native-dialog rejection, metadata and image comparison, unknown/hidden UI fields, displayed quote freshness boundaries, real SDK stdio initialization and package launch safeguards.

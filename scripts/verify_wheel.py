@@ -15,6 +15,7 @@ with tempfile.TemporaryDirectory(prefix='firestorm-mcp-wheel-') as temporary:
     environment = temp / 'environment'
     venv.EnvBuilder(with_pip=True).create(environment)
     python = environment / ('Scripts/python.exe' if os.name == 'nt' else 'bin/python')
+    subprocess.run([str(python), '-m', 'pip', '--disable-pip-version-check', 'install', '--upgrade', 'pip>=26.2,<27'], check=True)
     subprocess.run([str(python), '-m', 'pip', '--disable-pip-version-check', 'install', str(args.wheel.resolve())], check=True)
     env = os.environ.copy()
     env.pop('PYTHONPATH', None)

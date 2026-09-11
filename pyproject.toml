@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "firestorm-mcp"
-version = "0.2.0a1"
+version = "0.3.0a1"
 description = "Local MCP access to Firestorm's live LEAP APIs and asset inspection workflows"
 requires-python = ">=3.11"
 readme = "README.md"
@@ -13,7 +13,7 @@ license-files = ["LICENSE", "THIRD_PARTY.md"]
 authors = [{name = "Firestorm MCP contributors"}]
 keywords = ["mcp", "firestorm", "second-life", "blender", "virtual-world", "ai-agent", "leap"]
 classifiers = ["Development Status :: 3 - Alpha", "Operating System :: Microsoft :: Windows", "Programming Language :: Python :: 3"]
-dependencies = ["mcp>=1.12,<2", "llsd>=1.2.4,<2", "pillow>=11", "psutil>=6,<8", "pywin32>=311; sys_platform == 'win32'"]
+dependencies = ["mcp>=2.2,<3", "jsonschema>=4.20,<5", "llsd>=1.2.4,<2", "pillow>=11", "psutil>=6,<8", "pywin32>=311; sys_platform == 'win32'"]
 
 [project.urls]
 Homepage = "https://github.com/AochiToxx/firestorm-mcp"
