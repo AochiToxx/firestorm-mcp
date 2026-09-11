@@ -2,6 +2,8 @@
 
 This alpha grants powerful access to a local viewer. Use it only with an MCP host and local software you trust. The HTTP bridge binds to loopback, requires a per-session token and rejects browser Origin requests. Same-user processes can read its local connection file; this is not isolation from other software running as that user. Do not expose the endpoint through a tunnel or public web server.
 
+The client bypasses configured proxies and refuses HTTP redirects, including redirects to other loopback paths. Rejected small HTTP request bodies are drained with a short bound to avoid Windows socket resets; they are never parsed or dispatched. CI checks installed dependencies against published advisories. This is a point-in-time check, not a guarantee that unknown vulnerabilities are absent.
+
 Use GitHub **Security → Report a vulnerability** when private vulnerability reporting is available. If that option is unavailable, ask for a private reporting channel in a minimal issue containing no exploit details, tokens, logs or personal data. Do not place credentials or private captures in public issues.
 
 Reports should identify the version, affected boundary, a minimal synthetic reproduction and impact. Redact machine/account paths and identifiers. The maintainers do not promise a response SLA. Only the current alpha line is maintained; known limitations are documented in the README.

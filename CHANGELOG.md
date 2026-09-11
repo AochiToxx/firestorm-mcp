@@ -14,6 +14,7 @@
 - Require a visible enabled target `path` in `ui_press_key` (breaking safety change); target both key events and return selected-value readback. Selection by value also returns readback where supported.
 - Flag black, nearly uniform and transparent captures without treating nonblank images as semantic verification.
 - Refuse loopback HTTP redirects so bridge credentials/actions cannot follow a redirected endpoint.
+- Drain bounded rejected HTTP bodies to avoid Windows connection resets; extend Windows CI to Python 3.14 and add dependency advisory checks.
 - Keep the existing release downloads and active consumer installations unchanged pending coordinated live validation.
 
 ## 0.2.0a1 — private collaboration alpha
