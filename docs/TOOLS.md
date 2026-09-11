@@ -2,7 +2,7 @@
 
 Generated from the current workflow definitions and historical Firestorm 7.2.4.80712 API discovery. Refresh the running viewer before relying on a dynamic operation. Counts are not test coverage.
 
-42 workflow tools; 94 historical viewer operations.
+43 workflow tools; 94 historical viewer operations.
 
 ## Workflow tools
 
@@ -47,6 +47,7 @@ Generated from the current workflow definitions and historical Firestorm 7.2.4.8
 | `local_mesh_open` | Open Firestorm's Local Mesh panel. Its local replacements are visible only in this viewer and do not prove server upload. |
 | `local_mesh_auto_reload` | Set local mesh automatic reload so Blender exports can refresh in the viewer. Returns the previous settings for restoration. |
 | `mesh_upload_open` | Open the standard mesh upload preview workflow. Does not submit an upload or authorize an upload fee. |
+| `mesh_preview_camera` | Adjust only the open mesh uploader's preview camera using a bounded path-targeted drag. horizontal/vertical are fractions of its freshly inspected preview rectangle, each -0.45 to 0.45. Positive vertical zooms in; zoom requires horizontal=0. Pan/orbit use the viewer's modifiers. Does not move the world camera. Capture afterward to verify composition; no exact pose getter/restoration is available. |
 | `mesh_upload_status` | Read mesh-import preview LOD sources/files/counts, physics, dimensions, warnings, displayed weights and fee with control visibility. Does not calculate or submit an upload. Quote freshness and file-content bindings remain unverified. |
 | `local_mesh_status` | Read Local Mesh's selected item/object and displayed import log. This is local preview evidence, not a simulator upload. |
 | `capture_manifest_read` | Read a saved capture manifest created by this server. |

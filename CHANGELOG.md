@@ -15,6 +15,8 @@
 - Flag black, nearly uniform and transparent captures without treating nonblank images as semantic verification.
 - Refuse loopback HTTP redirects so bridge credentials/actions cannot follow a redirected endpoint.
 - Drain bounded rejected HTTP bodies to avoid Windows connection resets; extend Windows CI to Python 3.14 and add dependency advisory checks.
+- Preserve UI search pages when individual returned paths cannot be inspected.
+- Add `mesh_preview_camera` for bounded path-targeted uploader zoom/pan/orbit; the current workflow catalog has 43 tools.
 - Keep the existing release downloads and active consumer installations unchanged pending coordinated live validation.
 
 ## 0.2.0a1 — private collaboration alpha

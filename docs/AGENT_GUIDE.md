@@ -49,11 +49,19 @@ Use `floater_open`'s discovered `ui_path`, then scope `ui_find` to it. Inspect a
 
 In `0.3.0a1`, use `ui_find` with `search_in:"name"` to avoid matching every descendant of a named parent. `match` accepts `contains`, `exact`, `prefix` or shell-style `glob`, case-insensitively. `max_depth:1` includes the subtree root and immediate children. Results are sorted; follow `next_offset` until null and inspect `truncated`. Each page is a new live query, so changes between pages can shift results. Filtering/paging bounds the returned data, not the viewer's subtree enumeration cost.
 
+With `include_info:true`, one uninspectable item does not discard the page. Its aligned `info` entry contains `path`, `available:false` and `error`; other paths and pagination remain available. Some viewer-generated names containing `%` fail to resolve again. Treat that item as unknown and report it; do not assume that hidden/invalid state applies to the entire panel.
+
 `ui_click` accepts optional `floater` (registered name, for example `upload_model`) and `observe_path`. The floater option resolves a unique button path and invokes its callback through `LLFloaterReg.clickButton`; it rejects ambiguous names and paths outside that panel. `observe_path` supplies before/after visibility and value readback. A callback reply is not proof of the intended effect.
 
 **Breaking change:** `ui_press_key` now requires `path`. Both key events include the freshly checked visible/enabled target; Firestorm's input listener sets focus during path-targeted dispatch. The result includes `before`/`after` UI observations (or a readback error). Use `observe_path` if a popup's selected value belongs to its parent. Enter can commit a form and viewer shortcuts/human input can still interfere. There is no automatic fallback to an unbound key. Selection on the tested viewer still requires live verification; native `ui_select` remains unavailable when its API is missing.
 
+**Selected versus committed:** in the tested model importer, a targeted `Home` on a source combo changes the label to `Load from file`, but its Browse button stays hidden until a targeted `Return` on that same combo commits the choice. Use `observe_path` on the dependent Browse control for the commit call and verify both visible/enabled state before clicking it. Do not infer committed source mode from the selected label alone. For a preview LOD combo, likewise inspect the selected value and the rendered geometry after committing. These are separate observations, and a timeout must not trigger a blind repeat.
+
 `camera_set` and `capture_orbit` use **region** coordinates. `avatar_walk_to` uses **global** coordinates. Never interchange them. Camera manifests record requested poses. World-camera operations do not control the model uploader's preview camera.
+
+`mesh_preview_camera` targets the uploader's separate preview rectangle. Start with `{"mode":"zoom","vertical":0.2}` and inspect a new snapshot. Positive vertical zooms in; negative zooms out. `pan` and `orbit` accept horizontal/vertical fractions of the current rectangle, bounded to ±0.45 per call. Zoom requires horizontal zero. The helper checks the visible/enabled rectangle, uses only path-targeted drag events, rechecks geometry and attempts mouse-up in cleanup. Human input and UI changes can still interfere. There is no exact preview camera getter or restoration promise. The call reports requested UI-pixel positions and input replies, not a measured camera pose or verified composition.
+
+Importing an LOD file can change `preview_lod_combo`. After the final file import, explicitly select and commit the desired preview LOD, read it back and only then label/capture the frame. Caller-provided screenshot labels are not observed subject/LOD identity.
 
 ## Evidence and failure handling
 

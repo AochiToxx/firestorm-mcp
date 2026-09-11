@@ -39,6 +39,22 @@ def test_keys_require_target_and_hidden_target_never_receives_input(tmp_path):
     assert calls == ["getInfo"]
 
 
+def test_uninspectable_search_item_does_not_discard_page(tmp_path):
+    tools = Tools(tmp_path)
+    paths = ["/panel/A", "/panel/Cosine%", "/panel/Z"]
+    def reply(api, op, args, **kw):
+        if op == "getPaths":
+            return {"paths": paths}
+        if args["path"].endswith("%"):
+            raise ValueError("Viewer rejected this returned path")
+        return {"path": args["path"], "available": True}
+    tools.client.call = reply
+    page = tools.call("ui_find", {"query": "", "under": "/panel", "limit": 2, "include_info": True})
+    assert page["paths"] == paths[:2] and page["next_offset"] == 2
+    assert page["info"][0]["available"] is True
+    assert page["info"][1] == {"path": paths[1], "available": False, "error": "Viewer rejected this returned path"}
+
+
 def test_keys_target_both_events_and_return_selection_readback(tmp_path):
     tools = Tools(tmp_path)
     selected = "High"
@@ -113,3 +129,47 @@ def test_nonblank_capture_still_requires_visual_review(tmp_path):
     assert result["quality"]["status"] == "nonblank"
     assert result["quality"]["visual_content_verified"] is False
     assert result["requested_size"] == [1280, 720] and result["width"] == 32
+
+
+@pytest.mark.parametrize("mode,mask", [("zoom", []), ("pan", ["CTL", "SHIFT"]), ("orbit", ["CTL"])])
+def test_preview_camera_targets_bounded_rectangle_and_releases(tmp_path, monkeypatch, mode, mask):
+    xui = tmp_path / "viewer/skins/default/xui/en"
+    xui.mkdir(parents=True)
+    (xui / "floater_model_preview.xml").write_text('<floater name="Preview"><panel name="preview_panel"/></floater>')
+    tools = Tools(tmp_path, tmp_path / "viewer")
+    calls = []
+    def reply(api, op, args, **kw):
+        assert api == "LLWindow" and args["path"].endswith("/Preview/preview_panel")
+        calls.append((op, args))
+        return {"visible_chain": True, "enabled_chain": True, "handled": True,
+                "rect": {"left": 600, "right": 920, "bottom": 100, "top": 660}}
+    tools.client.call = reply
+    monkeypatch.setattr("firestorm_mcp.server.time.sleep", lambda _: None)
+    result = tools.call("mesh_preview_camera", {"mode": mode, "vertical": 0.2})
+    inputs = [(op, args) for op, args in calls if op.startswith("mouse")]
+    assert [op for op, args in inputs] == ["mouseDown", "mouseMove", "mouseUp"]
+    assert all(args["mask"] == mask for op, args in inputs)
+    assert result["start_ui_pixels"] == [760, 380] and result["end_ui_pixels"] == [760, 492]
+    assert not result["verified_effect"] and not result["camera_pose_observed"]
+    calls.clear()
+    with pytest.raises(ValueError, match="fractions"):
+        tools.call("mesh_preview_camera", {"vertical": 1})
+    assert calls == []
+
+
+def test_failed_camera_move_still_releases_mouse(tmp_path):
+    xui = tmp_path / "viewer/skins/default/xui/en"
+    xui.mkdir(parents=True)
+    (xui / "floater_model_preview.xml").write_text('<floater name="Preview"><panel name="preview_panel"/></floater>')
+    tools = Tools(tmp_path, tmp_path / "viewer")
+    operations = []
+    def reply(api, op, args, **kw):
+        operations.append(op)
+        if op == "mouseMove":
+            raise RuntimeError("synthetic movement failure")
+        return {"visible_chain": True, "enabled_chain": True, "handled": True,
+                "rect": {"left": 600, "right": 920, "bottom": 100, "top": 660}}
+    tools.client.call = reply
+    with pytest.raises(RuntimeError, match="synthetic"):
+        tools.call("mesh_preview_camera", {})
+    assert operations[-1] == "mouseUp"

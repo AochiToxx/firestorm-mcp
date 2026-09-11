@@ -546,6 +546,42 @@
     }
   },
   {
+    "name": "mesh_preview_camera",
+    "description": "Adjust only the open mesh uploader's preview camera using a bounded path-targeted drag. horizontal/vertical are fractions of its freshly inspected preview rectangle, each -0.45 to 0.45. Positive vertical zooms in; zoom requires horizontal=0. Pan/orbit use the viewer's modifiers. Does not move the world camera. Capture afterward to verify composition; no exact pose getter/restoration is available.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "default": "zoom",
+          "enum": [
+            "zoom",
+            "pan",
+            "orbit"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "horizontal": {
+          "default": 0,
+          "title": "Horizontal",
+          "type": "number"
+        },
+        "vertical": {
+          "default": 0.2,
+          "title": "Vertical",
+          "type": "number"
+        }
+      },
+      "title": "mesh_preview_cameraArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
     "name": "mesh_upload_open",
     "description": "Open the standard mesh upload preview workflow. Does not submit an upload or authorize an upload fee.",
     "inputSchema": {

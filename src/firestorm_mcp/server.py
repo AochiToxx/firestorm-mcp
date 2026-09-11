@@ -291,10 +291,17 @@ class Tools:
                     paths.append(path)
             selected = paths[offset:offset + limit]
             next_offset = offset + len(selected) if offset + len(selected) < len(paths) else None
+            info = []
+            if include_info:
+                for path in selected:
+                    try:
+                        info.append(c.call("LLWindow", "getInfo", {"path": path}, expect_reply=True))
+                    except (ValueError, RuntimeError) as exc:
+                        info.append({"path": path, "available": False, "error": str(exc)})
             return {"total_matches": len(paths), "paths": selected, "offset": offset,
                     "returned": len(selected), "next_offset": next_offset, "truncated": next_offset is not None,
                     "pagination_consistency": "live_query_per_page_not_a_snapshot",
-                    "info": [c.call("LLWindow", "getInfo", {"path": p}, expect_reply=True) for p in selected] if include_info else []}
+                    "info": info}
 
         @reg("Read the value of a specific discovered UI control. Use targeted paths to avoid unrelated chat or private fields.", True)
         def ui_get_value(path: str):
@@ -540,6 +547,52 @@ class Tools:
         def mesh_upload_open():
             return ui_invoke_menu("Upload Model")
 
+        @reg("Adjust only the open mesh uploader's preview camera using a bounded path-targeted drag. horizontal/vertical are fractions of its freshly inspected preview rectangle, each -0.45 to 0.45. Positive vertical zooms in; zoom requires horizontal=0. Pan/orbit use the viewer's modifiers. Does not move the world camera. Capture afterward to verify composition; no exact pose getter/restoration is available.")
+        def mesh_preview_camera(mode: typing.Literal["zoom", "pan", "orbit"] = "zoom",
+                                horizontal: float = 0, vertical: float = 0.2):
+            if not all(math.isfinite(v) and abs(v) <= 0.45 for v in (horizontal, vertical)):
+                raise ValueError("Use finite preview fractions between -0.45 and 0.45")
+            if (horizontal == 0 and vertical == 0) or (mode == "zoom" and horizontal != 0):
+                raise ValueError("Supply a nonzero adjustment; zoom uses vertical only")
+            document = ET.parse(self.viewer_dir / "skins/default/xui/en/floater_model_preview.xml").getroot()
+            if len(document.findall("./panel[@name='preview_panel']")) != 1 or not document.get("name"):
+                raise ValueError("This viewer's uploader does not expose the expected preview panel")
+            path = "/main_view/menu_stack/world_panel/Floater View/" + document.get("name") + "/preview_panel"
+            before = c.call("LLWindow", "getInfo", {"path": path}, expect_reply=True)
+            if not before.get("visible_chain") or not before.get("enabled_chain"):
+                raise ValueError("Mesh preview panel is hidden or disabled")
+            rect = before.get("rect", {})
+            if any(not isinstance(rect.get(key), int) for key in ("left", "right", "bottom", "top")):
+                raise ValueError("Viewer did not supply an integer preview rectangle")
+            width, height = rect["right"] - rect["left"], rect["top"] - rect["bottom"]
+            if not 32 <= min(width, height) or max(width, height) > 8192:
+                raise ValueError("Preview rectangle is too small or outside supported bounds")
+            start = [(rect["left"] + rect["right"]) // 2, (rect["bottom"] + rect["top"]) // 2]
+            end = [start[0] + round(horizontal * width), start[1] + round(vertical * height)]
+            if start == end:
+                raise ValueError("Adjustment rounds to zero pixels")
+            mask = {"zoom": [], "orbit": ["CTL"], "pan": ["CTL", "SHIFT"]}[mode]
+            params = {"path": path, "button": "LEFT", "mask": mask}
+            try:
+                down = c.call("LLWindow", "mouseDown", {**params, "x": start[0], "y": start[1]}, expect_reply=True)
+                if down.get("handled") is not True:
+                    raise RuntimeError("Preview did not handle mouseDown; drag was stopped")
+                current = c.call("LLWindow", "getInfo", {"path": path}, expect_reply=True)
+                if current.get("rect") != rect or not current.get("visible_chain") or not current.get("enabled_chain"):
+                    raise RuntimeError("Preview changed during input; drag was stopped")
+                moved = c.call("LLWindow", "mouseMove", {"path": path, "mask": mask, "x": end[0], "y": end[1]}, expect_reply=True)
+                # Mouse movement is consumed by hover/render after event dispatch.
+                time.sleep(0.2)
+            finally:
+                # Never leave the uploader holding mouse capture after a failed move.
+                up = c.call("LLWindow", "mouseUp", {**params, "x": start[0], "y": start[1]}, expect_reply=True)
+            after = c.call("LLWindow", "getInfo", {"path": path}, expect_reply=True)
+            return {"evidence_kind": "viewer_import_preview_camera_input", "mode": mode,
+                    "path": path, "start_ui_pixels": start, "end_ui_pixels": end,
+                    "before": before, "after": after, "down": down, "move": moved, "up": up,
+                    "verified_effect": False, "camera_pose_observed": False,
+                    "note": "Inspect a new preview snapshot. Input acknowledgment does not verify zoom, pan, orbit or subject identity."}
+
         @reg("Read mesh-import preview LOD sources/files/counts, physics, dimensions, warnings, displayed weights and fee with control visibility. Does not calculate or submit an upload. Quote freshness and file-content bindings remain unverified.", True)
         def mesh_upload_status():
             names = {"description_form", "import_scale", "import_dimensions", "upload_fee", "status",
@@ -639,7 +692,7 @@ def main():
     parser.add_argument("--data-dir", "--root", dest="root", type=Path, default=ROOT, help="Machine-local state directory; --root is a compatibility alias")
     parser.add_argument("--viewer-dir", type=Path, default=viewer_directory())
     parser.add_argument("--tool-profile", choices=("all", "compact"), default="all",
-                        help="compact exposes 42 workflow tools; viewer_call retains discovered API access")
+                        help="compact exposes 43 workflow tools; viewer_call retains discovered API access")
     args = parser.parse_args()
     asyncio.run(serve(args.root, args.viewer_dir, args.tool_profile))
 
