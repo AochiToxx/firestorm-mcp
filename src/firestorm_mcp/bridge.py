@@ -237,15 +237,28 @@ def make_handler(bridge, token):
         def log_message(self, *_):
             pass
 
+        def reject_request(self, status):
+            # Closing with an unread small POST body can reset the Windows socket
+            # before the peer receives the HTTP error. Drain only a bounded body,
+            # never parse it or pass it to the bridge, and do not wait on a slow peer.
+            try:
+                size = int(self.headers.get("Content-Length", "0"))
+                if 0 < size <= 16384 and not self.headers.get("Transfer-Encoding"):
+                    self.connection.settimeout(1)
+                    self.rfile.read(size)
+            except (ValueError, OSError):
+                pass
+            self.send_error(status)
+
         def do_POST(self):
             if self.path != "/rpc":
-                self.send_error(404)
+                self.reject_request(404)
                 return
             if not hmac.compare_digest(self.headers.get("Authorization", ""), "Bearer " + token):
-                self.send_error(401)
+                self.reject_request(401)
                 return
             if self.headers.get("Origin"):
-                self.send_error(403)
+                self.reject_request(403)
                 return
             try:
                 size = int(self.headers.get("Content-Length", "0"))

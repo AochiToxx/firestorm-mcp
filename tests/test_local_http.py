@@ -11,12 +11,17 @@ from firestorm_mcp.client import BridgeClient
 
 
 class StubBridge:
+    def __init__(self):
+        self.requests = []
+
     def handle(self, request):
+        self.requests.append(request)
         return {"connected": True}
 
 
 def test_loopback_auth_origin_and_valid_request():
-    server = ThreadingHTTPServer(("127.0.0.1", 0), make_handler(StubBridge(), "test-secret"))
+    bridge = StubBridge()
+    server = ThreadingHTTPServer(("127.0.0.1", 0), make_handler(bridge, "test-secret"))
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
@@ -27,8 +32,10 @@ def test_loopback_auth_origin_and_valid_request():
             with pytest.raises(urllib.error.HTTPError) as caught:
                 opener.open(urllib.request.Request(url, b'{}', headers), timeout=2)
             assert caught.value.code == expected
+        assert bridge.requests == []  # Rejected bodies never reach the dispatcher.
         with opener.open(urllib.request.Request(url, b'{}', {"Authorization": "Bearer test-secret"}), timeout=2) as response:
             assert json.load(response)["result"]["connected"]
+        assert bridge.requests == [{}]
     finally:
         server.shutdown()
         server.server_close()
