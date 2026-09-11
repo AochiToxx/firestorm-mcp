@@ -8,6 +8,12 @@ import urllib.parse
 import uuid
 
 
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        # A local response must never forward the bearer token or action elsewhere.
+        return None
+
+
 class BridgeClient:
     def __init__(self, runtime: Path):
         self.runtime = Path(runtime)
@@ -28,7 +34,7 @@ class BridgeClient:
             {"Content-Type": "application/json", "Authorization": "Bearer " + connection["token"]})
         try:
             # Explicitly bypass system proxies for this local-only connection.
-            with urllib.request.build_opener(urllib.request.ProxyHandler({})).open(request, timeout=70) as response:
+            with urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect()).open(request, timeout=70) as response:
                 result = json.load(response)
         except urllib.error.HTTPError as exc:
             try:

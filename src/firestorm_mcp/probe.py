@@ -12,46 +12,46 @@ import json
 from pathlib import Path
 import sys
 
-from mcp import ClientSession, StdioServerParameters
-from mcp.client.stdio import stdio_client
+from mcp import Client, StdioServerParameters
 from .paths import data_root, viewer_directory
 
 
 def unpack(result):
-    if result.isError:
+    if result.is_error:
         raise RuntimeError("; ".join(part.text for part in result.content if part.type == "text"))
     return json.loads(next(part.text for part in result.content if part.type == "text"))
 
 
-async def probe(root, viewer_dir=None):
+async def probe(root, viewer_dir=None, tool_profile="all"):
     params = StdioServerParameters(command=sys.executable,
-        args=["-m", "firestorm_mcp.server", "--data-dir", str(root), "--viewer-dir", str(viewer_dir or viewer_directory())])
-    async with stdio_client(params) as (read, write):
-        async with ClientSession(read, write) as session:
-            initialized = await session.initialize()
-            status = unpack(await session.call_tool("connection_status", {}))
-            capabilities = None
-            if status.get("connected"):
-                capabilities = unpack(await session.call_tool("capabilities_refresh", {}))
-            listed = await session.list_tools()
-            return {"checked_at_utc": datetime.now(timezone.utc).isoformat(),
+        args=["-m", "firestorm_mcp.server", "--data-dir", str(root), "--viewer-dir", str(viewer_dir or viewer_directory()),
+              "--tool-profile", tool_profile])
+    async with Client(params) as session:
+        status = unpack(await session.call_tool("connection_status", {}))
+        capabilities = None
+        if status.get("connected"):
+            capabilities = unpack(await session.call_tool("capabilities_refresh", {}))
+        listed = await session.list_tools()
+        return {"checked_at_utc": datetime.now(timezone.utc).isoformat(),
                     "entry_point": "MCP stdio client", "mcp_initialized": True,
-                    "server": initialized.serverInfo.model_dump(), "connection": status,
+                    "server": session.server_info.model_dump(by_alias=True), "connection": status,
+                    "protocol_version": session.protocol_version, "tool_profile": tool_profile,
                     "tool_count": len(listed.tools),
                     "tool_names": sorted(item.name for item in listed.tools),
                     "capabilities": capabilities, "viewer_started": False,
                     "viewer_input_sent": False, "lease_acquired": False,
-                    "lease_owner_verified": bool(status.get("connected"))}
+                    "lease_owner_verified": False}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data-dir", "--root", dest="root", type=Path, default=data_root())
     parser.add_argument("--viewer-dir", type=Path, default=viewer_directory())
+    parser.add_argument("--tool-profile", choices=("all", "compact"), default="all")
     parser.add_argument("--output", type=Path, help="Optional JSON report path; contains no bridge token")
     args = parser.parse_args()
     try:
-        report = asyncio.run(asyncio.wait_for(probe(args.root.resolve(), args.viewer_dir), timeout=90))
+        report = asyncio.run(asyncio.wait_for(probe(args.root.resolve(), args.viewer_dir, args.tool_profile), timeout=90))
         code = 0 if report["connection"].get("connected") else 2
     except Exception as exc:
         report = {"mcp_initialized": False, "error": type(exc).__name__ + ": " + str(exc)}

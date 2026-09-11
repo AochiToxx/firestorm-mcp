@@ -15,6 +15,7 @@ with tempfile.TemporaryDirectory(prefix='firestorm-mcp-wheel-') as temporary:
     environment = temp / 'environment'
     venv.EnvBuilder(with_pip=True).create(environment)
     python = environment / ('Scripts/python.exe' if os.name == 'nt' else 'bin/python')
+    subprocess.run([str(python), '-m', 'pip', '--disable-pip-version-check', 'install', '--upgrade', 'pip>=26.2,<27'], check=True)
     subprocess.run([str(python), '-m', 'pip', '--disable-pip-version-check', 'install', str(args.wheel.resolve())], check=True)
     env = os.environ.copy()
     env.pop('PYTHONPATH', None)
@@ -23,7 +24,7 @@ with tempfile.TemporaryDirectory(prefix='firestorm-mcp-wheel-') as temporary:
                             capture_output=True, text=True, timeout=90)
     report = json.loads(result.stdout)
     assert result.returncode == 2, (result.returncode, result.stderr)
-    assert report['mcp_initialized'] and report['tool_count'] == 42
+    assert report['mcp_initialized'] and report['tool_count'] == 43
     assert report['connection']['connected'] is False
     assert report['lease_acquired'] is False and report['viewer_input_sent'] is False
     check = subprocess.run([str(python), '-c',
@@ -31,5 +32,5 @@ with tempfile.TemporaryDirectory(prefix='firestorm-mcp-wheel-') as temporary:
         'assert Path(firestorm_mcp.__file__).with_name("leap_entry.py").is_file()'],
         cwd=temp, env=env, capture_output=True, text=True)
     assert check.returncode == 0, check.stderr
-    print(json.dumps({'wheel_install': 'passed', 'offline_mcp': 'passed', 'workflow_tools': 42,
+    print(json.dumps({'wheel_install': 'passed', 'offline_mcp': 'passed', 'workflow_tools': 43,
                       'viewer_started': False, 'packaged_leap_entry': 'present'}))

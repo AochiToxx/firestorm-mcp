@@ -4,7 +4,9 @@
 
 [Downloads](#downloads) · [Install](#install-on-windows) · [Capabilities](#what-can-it-do-today) · [Agent quick start](#for-ai-agents) · [Tool reference](docs/TOOLS.md) · [Contribute](CONTRIBUTING.md) · [Known limits](#known-limits)
 
-**Status:** `0.2.0a1` · Windows alpha · Python 3.11+ · MIT licence
+**Version:** `0.3.0a1` · Windows alpha · Python 3.11–3.14 tested · MIT licence
+
+This release adds MCP SDK v2 and protocol compatibility through `2026-07-28`, a compact tool profile, structured results, precise paged UI searches, path-targeted keys, registered button callbacks, uploader camera input and blank-capture detection. See the [compatibility audit and remaining work](docs/COMPATIBILITY.md).
 
 Firestorm MCP is an independent, community-oriented **Model Context Protocol (MCP)** server. It connects to an installed Firestorm viewer through the viewer's **LEAP** interface. Your agent works through the same viewer you can see and control; no separate bot avatar or custom viewer build is required.
 
@@ -20,18 +22,20 @@ Firestorm MCP server
 Viewer-owned LEAP helper ────── Firestorm viewer ────── Second Life
 ```
 
-The project currently defines **42 workflow tools**. A previously tested, signed-in Firestorm **7.2.4.80712** session exposed **94 additional operations across 18 APIs**, for **136 tools** in that session. Before login, fewer operations were available. These are discovery counts, not a claim that every consequential operation has been live-tested. Always refresh capabilities on the viewer you actually use.
+The catalog defines **43 workflow tools**. A tested, signed-in Firestorm **7.2.4.80712** session exposed **94 additional operations across 18 APIs**; with the current workflow catalog, that gives **137 tools** in the expanded profile. Before login, fewer operations are available. These are discovery counts, not a claim that every consequential operation has been live-tested. Always refresh capabilities on the viewer you actually use.
+
+Startup exposes the 43 workflow tools immediately, even with a stalled viewer. Call `capabilities_refresh` to discover viewer operations. Use `--tool-profile compact` when combining this server with other MCPs or using hosts with tool-count limits: the list stays at 43 and `viewer_call` retains access to all discovered operations. The default `all` profile adds individual viewer tools after refresh. Compact mode changes discovery presentation, not permissions.
 
 ## Downloads
 
-**[Download Firestorm MCP for Windows — setup/source ZIP](https://github.com/AochiToxx/firestorm-mcp/releases/download/v0.2.0a1/firestorm-mcp-0.2.0a1-source.zip)**
+**[Download Firestorm MCP for Windows — setup/source ZIP](https://github.com/AochiToxx/firestorm-mcp/releases/download/v0.3.0a1/firestorm-mcp-0.3.0a1-source.zip)**
 
 | Download | Choose this when |
 | --- | --- |
-| [Windows setup/source ZIP](https://github.com/AochiToxx/firestorm-mcp/releases/download/v0.2.0a1/firestorm-mcp-0.2.0a1-source.zip) | Recommended: extract, run `Install.cmd`, then follow the quick start. Includes source, setup scripts, docs and tests. Python and Firestorm are installed separately. |
-| [Python wheel](https://github.com/AochiToxx/firestorm-mcp/releases/download/v0.2.0a1/firestorm_mcp-0.2.0a1-py3-none-any.whl) | You already manage Python environments and want the installed command-line tools. |
-| [SHA-256 checksums](https://github.com/AochiToxx/firestorm-mcp/releases/download/v0.2.0a1/SHA256SUMS.txt) | Verify a downloaded asset against the published release. |
-| [Release notes and all assets](https://github.com/AochiToxx/firestorm-mcp/releases/tag/v0.2.0a1) | Review this alpha's changes, checks and limitations. |
+| [Windows setup/source ZIP](https://github.com/AochiToxx/firestorm-mcp/releases/download/v0.3.0a1/firestorm-mcp-0.3.0a1-source.zip) | Recommended: extract, run `Install.cmd`, then follow the quick start. Includes source, setup scripts, docs and tests. Python and Firestorm are installed separately. |
+| [Python wheel](https://github.com/AochiToxx/firestorm-mcp/releases/download/v0.3.0a1/firestorm_mcp-0.3.0a1-py3-none-any.whl) | You already manage Python environments and want the installed command-line tools. |
+| [SHA-256 checksums](https://github.com/AochiToxx/firestorm-mcp/releases/download/v0.3.0a1/SHA256SUMS.txt) | Verify a downloaded asset against the published release. |
+| [Release notes and all assets](https://github.com/AochiToxx/firestorm-mcp/releases/tag/v0.3.0a1) | Review this alpha's changes, checks and limitations. |
 
 Downloads are hosted on this project's GitHub Releases page. They require repository access while the project remains private. This alpha is not yet listed on PyPI or the public MCP Registry.
 
@@ -48,7 +52,7 @@ Downloads are hosted on this project's GitHub Releases page. They require reposi
   "mcpServers": {
     "firestorm": {
       "command": "C:/path/to/firestorm-mcp/.venv/Scripts/python.exe",
-      "args": ["-m", "firestorm_mcp.server"]
+      "args": ["-m", "firestorm_mcp.server", "--tool-profile", "compact"]
     }
   }
 }
@@ -69,13 +73,13 @@ The new package stores runtime state under `%LOCALAPPDATA%\FirestormMCP` by defa
 | Events | `events_subscribe`, `events_read`, `events_unsubscribe` | Subscribe to named viewer event streams, read cursor-based results and detect dropped buffered events. |
 | Export files | `asset_inspect` | Read COLLADA/glTF/GLB/image metadata, hashes, DAE units/axis/declared triangles, material counts or definitions and image references. No Blender process is required. |
 | Local mesh preview | `local_mesh_open`, `local_mesh_status`, `local_mesh_auto_reload` | Open Firestorm Local Mesh, inspect its selection/log and configure automatic reload with previous-setting readback. A local replacement is visible only in that viewer. |
-| Mesh importer | `mesh_upload_open`, `mesh_upload_status` | Open the model-upload preview; read LOD source/file selections, triangles/vertices, dimensions/scale, physics fields, warnings, displayed weights/costs and relevant control visibility. Reading status neither calculates nor submits an upload. |
+| Mesh importer | `mesh_upload_open`, `mesh_upload_status`, `mesh_preview_camera` | Open the model-upload preview; read LOD source/file selections, counts, dimensions, physics, warnings, displayed weights/costs and visibility; adjust the separate preview camera with a bounded path-targeted drag. Reading status neither calculates nor submits an upload. |
 | Native file selection | `native_file_dialogs`, `native_file_choose` | Discover recognized Windows Open dialogs owned by Firestorm, select an existing file and verify filename readback before invoking Open. Requires normal desktop access. |
-| Panels and UI | `floater_list`, `floater_open`, `ui_find`, `ui_inspect`, `ui_get_value`, `ui_click`, `ui_set_text`, `ui_press_key`, `ui_select` | Discover registered panels and scoped control paths; inspect visibility/enabled state; read values and send bounded input. Some operations depend on the viewer version; see limits below. |
+| Panels and UI | `floater_list`, `floater_open`, `ui_find`, `ui_inspect`, `ui_get_value`, `ui_click`, `ui_set_text`, `ui_press_key`, `ui_select` | Search paths or names with exact/prefix/glob/depth filters and explicit pages; inspect visibility/enabled state; invoke unique registered button callbacks; send path-targeted keys with before/after readback. Selection by value depends on the viewer version. |
 | Menus | `ui_list_menus`, `ui_invoke_menu` | Inspect installed menu definitions and invoke an exact validated entry. Arbitrary callbacks are rejected. |
 | Avatar movement | `avatar_position`, `avatar_walk_to`, `avatar_movement_status`, `avatar_stop` | Read position, start/poll/stop autopilot. Walking takes global coordinates; successful dispatch does not prove arrival. |
 | Nearby objects and inventory | `world_objects`, `inventory_search` | Query nearby object IDs/positions and search a specific inventory folder. This is not full object, face or permission inspection. |
-| Camera and evidence | `camera_set`, `camera_release`, `snapshot`, `capture_orbit`, `capture_manifest_read`, `image_compare` | Request region-coordinate camera poses, capture PNGs with hashes, save orbit manifests and calculate pixel differences between same-sized images. |
+| Camera and evidence | `camera_set`, `camera_release`, `snapshot`, `capture_orbit`, `capture_manifest_read`, `image_compare` | Request region-coordinate camera poses, capture PNGs with hashes and blank-frame flags, save orbit manifests and calculate pixel differences between same-sized images. Nonblank images still require visual review. |
 | Viewer settings | `setting_get`, `setting_set` | Read/change a named setting with before/after readback. Restore temporary settings yourself; some persist across sessions. |
 
 The **dynamic viewer tools** add the operations exposed by these APIs: `GroupChat`, `LLAgent`, `LLAppViewer`, `LLAppearance`, `LLCommandDispatcher`, `LLFloaterAbout`, `LLFloaterReg`, `LLGesture`, `LLInventory`, `LLNotifications`, `LLPipeline`, `LLStartUp`, `LLTeleportHandler`, `LLURLDispatcher`, `LLViewerControl`, `LLViewerWindow`, `LLWindow` and `UI`.
@@ -116,16 +120,17 @@ Choose the originating file dialog deliberately. Some texture, sound or animatio
 
 The inherited viewer integration was live-tested on Windows with Firestorm **7.2.4.80712**. An original synthetic cube was loaded into Local Mesh and model-upload preview: **12 triangles, 24 vertices and 1 × 1 × 1 dimensions**. Text replacement/readback/restoration, a setting change/restoration, camera captures, scoped UI queries and native file selection were exercised. A 40-query large-reply run recovered nine duplicated Windows pipe blocks with zero failed queries.
 
-This packaging alpha adds a wheel-compatible launcher, machine-local state and standalone connection check. Its automated tests cover transport, authentication, leases, native dialog guards, metadata, real offline MCP initialization and packaging/launcher behavior. **The refactored launcher and expanded preview fields still require live validation in this release.** No live viewer was restarted to produce this package. See [VALIDATION.md](docs/VALIDATION.md) for the precise evidence boundary.
+The wheel-installed launcher/helper was exercised through a coordinated normal viewer restart. A separate consumer agent then tested an actual five-file Blender-export importer workflow and retested fixes: scoped discovery, explicit LOD/physics loading, source commits, preview selection, zoom/orbit, checkbox readback, Analyze, capture inspection and quote invalidation. Automated validation includes **64 tests**, Windows CI on **Python 3.11–3.14**, five wire-protocol revisions, legacy/current clients and **zero strict schema findings** from the official MCP Inspector. Fresh wheel and source-installer checks also passed. See [VALIDATION.md](docs/VALIDATION.md) for exact observations and untested cases.
 
 Raw user captures, account/object identifiers, credentials, machine paths and product assets are not distributed. Contributors should supply synthetic fixtures or minimal scrubbed reproductions.
 
 ## Known limits
 
 - **Windows alpha.** Native file-dialog automation recognizes English common dialogs. Other OS/viewer combinations are not certified; transport-only tests on another OS do not certify its viewer integration.
-- **UI selection is version-dependent.** The tested viewer lacks `UI.setSelectedByValue`, so `ui_select` reports unavailable. Clicking a combo-box body may not open its list. Verify the child control/focus and selected-value readback; do not blindly retry keys.
+- **UI selection is version-dependent.** The tested viewer lacks `UI.setSelectedByValue`, so `ui_select` reports unavailable. `ui_press_key` requires a visible enabled target `path` and returns readback; this is a breaking change from the original helper. A handled mouse click may leave a combo or checkbox unchanged. The [agent guide](docs/AGENT_GUIDE.md) records tested commit and checkbox-key procedures. Human input and viewer shortcuts can still interfere; verify state and do not blindly retry keys.
+- **Capture flags are heuristic.** Uniform/black/transparent frames are flagged, but a nonblank image can still be stale, obstructed or show the wrong subject. Inspect the image before using it as verification evidence.
 - **ASCII text fallback.** On the tested viewer, printable ASCII entry is supported up to 2,048 characters. Unicode/multiline paste requires another supported viewer API or user input.
-- **Camera requests are not measured poses.** No exact camera getter/manual-pose restoration, dedicated FOV workflow or uploader-preview-camera API is provided. The uploader's camera is separate from the world camera.
+- **Camera requests are not measured poses.** No exact camera getter/manual-pose restoration or dedicated FOV workflow is provided. `mesh_preview_camera` uses bounded UI drags in the uploader's separate preview; inspect fresh captures to verify the result.
 - **No finished five-file import helper.** Explicit LOD/physics selection currently uses inspected UI controls and native file dialogs. Displayed filenames are not proof that particular file bytes were loaded.
 - **Quotes are displayed readback.** `mesh_upload_status` labels numeric fees `displayed_only`, with `freshness_verified:false` and `calculation_requested:false`. Readback is sequential, not atomic. Hidden control text can be stale; inspect its visibility.
 - **No semantic object/face/material or script lifecycle suite yet.** Nearby-object queries do not establish ownership, permissions, material assignment or land impact. Metadata inspection does not prove PBR fidelity.

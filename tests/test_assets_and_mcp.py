@@ -4,8 +4,7 @@ import sys
 
 import pytest
 from PIL import Image
-from mcp import ClientSession, StdioServerParameters
-from mcp.client.stdio import stdio_client
+from mcp import Client, StdioServerParameters
 
 from firestorm_mcp.assets import inspect_asset, compare_images
 from firestorm_mcp.server import Tools
@@ -84,15 +83,14 @@ def test_preview_readback_never_claims_fresh_quote_or_hidden_warning(tmp_path, f
 def test_real_mcp_stdio_handshake_offline(tmp_path):
     async def scenario():
         params = StdioServerParameters(command=sys.executable, args=["-m", "firestorm_mcp.server", "--root", str(tmp_path)])
-        async with stdio_client(params) as (read, write):
-            async with ClientSession(read, write) as session:
-                initialized = await session.initialize()
-                assert initialized.serverInfo.name == "firestorm-mcp"
-                listed = await session.list_tools()
-                assert len(listed.tools) == 42
-                response = await session.call_tool("asset_inspect", {"filename": str(FIXTURE.resolve())})
-                assert not response.isError
-                assert '"declared_triangles": 12' in response.content[0].text
-                missing = await session.call_tool("viewer_call", {"api": "missing", "operation": "missing"})
-                assert missing.isError
+        async with Client(params) as session:
+            assert session.server_info.name == "firestorm-mcp"
+            assert session.protocol_version == "2026-07-28"
+            listed = await session.list_tools()
+            assert len(listed.tools) == 43
+            response = await session.call_tool("asset_inspect", {"filename": str(FIXTURE.resolve())})
+            assert not response.is_error
+            assert '"declared_triangles": 12' in response.content[0].text
+            missing = await session.call_tool("viewer_call", {"api": "missing", "operation": "missing"})
+            assert missing.is_error
     asyncio.run(asyncio.wait_for(scenario(), 30))

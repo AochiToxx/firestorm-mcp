@@ -5,6 +5,7 @@ Firestorm MCP's Python bridge and synthetic test fixture are distributed under t
 | Dependency | Licence reported by the inspected distribution |
 | --- | --- |
 | MCP Python SDK | MIT |
+| jsonschema | MIT |
 | llsd | MIT |
 | Pillow | MIT-CMU |
 | pywin32 | PSF |

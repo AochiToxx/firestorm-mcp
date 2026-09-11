@@ -1,524 +1,39 @@
 [
   {
-    "name": "control_acquire",
-    "description": "Acquire exclusive bridge control for a multi-step workflow. Other clients can still read connection status/events. Renew before expiry and release in finally.",
+    "name": "asset_inspect",
+    "description": "Inspect a local COLLADA/glTF/GLB/texture export and record its SHA256. This checks file metadata, not upload eligibility, LOD quality, land impact or in-world appearance.",
     "inputSchema": {
+      "additionalProperties": false,
       "properties": {
-        "label": {
-          "default": "Blender asset verification",
-          "title": "Label",
-          "type": "string"
-        },
-        "seconds": {
-          "default": 300,
-          "title": "Seconds",
-          "type": "number"
-        }
-      },
-      "title": "control_acquireArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": false,
-      "destructiveHint": true,
-      "openWorldHint": true
-    }
-  },
-  {
-    "name": "control_release",
-    "description": "Release this client's exclusive control lease.",
-    "inputSchema": {
-      "properties": {},
-      "title": "control_releaseArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": false,
-      "destructiveHint": true,
-      "openWorldHint": true
-    }
-  },
-  {
-    "name": "native_file_dialogs",
-    "description": "List recognized Windows Open-file dialogs owned by this Firestorm installation. English common dialogs only; unsupported layouts require manual selection.",
-    "inputSchema": {
-      "properties": {},
-      "title": "native_file_dialogsArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": true,
-      "destructiveHint": false,
-      "openWorldHint": false
-    }
-  },
-  {
-    "name": "native_file_choose",
-    "description": "Select an existing file in a freshly discovered Firestorm Open dialog. Verifies window ownership and filename readback. Import success must be checked in viewer state. Know which import/upload action opened the picker first.",
-    "inputSchema": {
-      "properties": {
-        "dialog_id": {
-          "title": "Dialog Id",
-          "type": "integer"
-        },
         "filename": {
           "title": "Filename",
           "type": "string"
         }
       },
       "required": [
-        "dialog_id",
         "filename"
       ],
-      "title": "native_file_chooseArguments",
+      "title": "asset_inspectArguments",
       "type": "object"
     },
     "annotations": {
-      "readOnlyHint": false,
-      "destructiveHint": true,
-      "openWorldHint": true
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": false
     }
   },
   {
-    "name": "connection_status",
-    "description": "Check whether the local Firestorm LEAP helper is connected. Does not log in or change the viewer.",
+    "name": "avatar_movement_status",
+    "description": "Read autopilot progress and current avatar position.",
     "inputSchema": {
+      "additionalProperties": false,
       "properties": {},
-      "title": "connection_statusArguments",
+      "title": "avatar_movement_statusArguments",
       "type": "object"
     },
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
-    }
-  },
-  {
-    "name": "capabilities_refresh",
-    "description": "Discover all APIs and operations exposed by this running viewer; refresh dynamic MCP tool discovery.",
-    "inputSchema": {
-      "properties": {},
-      "title": "capabilities_refreshArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": true,
-      "destructiveHint": false,
-      "openWorldHint": false
-    }
-  },
-  {
-    "name": "viewer_api_inspect",
-    "description": "Read the live description and required arguments for an API or operation. Discover before calling unfamiliar operations.",
-    "inputSchema": {
-      "properties": {
-        "api": {
-          "title": "Api",
-          "type": "string"
-        },
-        "operation": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Operation"
-        }
-      },
-      "required": [
-        "api"
-      ],
-      "title": "viewer_api_inspectArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": true,
-      "destructiveHint": false,
-      "openWorldHint": false
-    }
-  },
-  {
-    "name": "viewer_call",
-    "description": "Invoke any discovered viewer API operation. arguments can contain typed LLSD values: {$uuid: string}, {$uri: string}, {$binary_base64: string}. Read state after writes; timeouts must not be blindly retried.",
-    "inputSchema": {
-      "properties": {
-        "api": {
-          "title": "Api",
-          "type": "string"
-        },
-        "operation": {
-          "title": "Operation",
-          "type": "string"
-        },
-        "arguments": {
-          "additionalProperties": true,
-          "default": {},
-          "title": "Arguments",
-          "type": "object"
-        },
-        "expect_reply": {
-          "anyOf": [
-            {
-              "type": "boolean"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Expect Reply"
-        },
-        "timeout": {
-          "default": 15,
-          "title": "Timeout",
-          "type": "number"
-        }
-      },
-      "required": [
-        "api",
-        "operation"
-      ],
-      "title": "viewer_callArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": false,
-      "destructiveHint": true,
-      "openWorldHint": true
-    }
-  },
-  {
-    "name": "events_subscribe",
-    "description": "Subscribe to a named viewer event stream, such as StartupState or LLAutopilot. Events are bounded and remain local until read.",
-    "inputSchema": {
-      "properties": {
-        "source": {
-          "title": "Source",
-          "type": "string"
-        }
-      },
-      "required": [
-        "source"
-      ],
-      "title": "events_subscribeArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": false,
-      "destructiveHint": true,
-      "openWorldHint": true
-    }
-  },
-  {
-    "name": "events_unsubscribe",
-    "description": "Stop subscribing to a viewer event stream.",
-    "inputSchema": {
-      "properties": {
-        "source": {
-          "title": "Source",
-          "type": "string"
-        }
-      },
-      "required": [
-        "source"
-      ],
-      "title": "events_unsubscribeArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": false,
-      "destructiveHint": true,
-      "openWorldHint": true
-    }
-  },
-  {
-    "name": "events_read",
-    "description": "Read subscribed viewer events after a cursor. The dropped flag identifies buffer overflow; do not infer missing events.",
-    "inputSchema": {
-      "properties": {
-        "after": {
-          "default": 0,
-          "title": "After",
-          "type": "integer"
-        }
-      },
-      "title": "events_readArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": true,
-      "destructiveHint": false,
-      "openWorldHint": false
-    }
-  },
-  {
-    "name": "ui_find",
-    "description": "Find UI control paths inside an explicit subtree, for example /main_view/menu_stack/world_panel/Floater View/Local Mesh. floater_open supplies the panel's ui_path when resolvable. Narrow scope avoids enumerating an entire loaded inventory.",
-    "inputSchema": {
-      "properties": {
-        "query": {
-          "title": "Query",
-          "type": "string"
-        },
-        "under": {
-          "default": "",
-          "title": "Under",
-          "type": "string"
-        },
-        "limit": {
-          "default": 50,
-          "title": "Limit",
-          "type": "integer"
-        },
-        "include_info": {
-          "default": false,
-          "title": "Include Info",
-          "type": "boolean"
-        }
-      },
-      "required": [
-        "query"
-      ],
-      "title": "ui_findArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": true,
-      "destructiveHint": false,
-      "openWorldHint": false
-    }
-  },
-  {
-    "name": "ui_get_value",
-    "description": "Read the value of a specific discovered UI control. Use targeted paths to avoid unrelated chat or private fields.",
-    "inputSchema": {
-      "properties": {
-        "path": {
-          "title": "Path",
-          "type": "string"
-        }
-      },
-      "required": [
-        "path"
-      ],
-      "title": "ui_get_valueArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": true,
-      "destructiveHint": false,
-      "openWorldHint": false
-    }
-  },
-  {
-    "name": "ui_click",
-    "description": "Click a visible, enabled discovered control by path. Returns input handling status, not proof of a simulator-side effect.",
-    "inputSchema": {
-      "properties": {
-        "path": {
-          "title": "Path",
-          "type": "string"
-        },
-        "button": {
-          "default": "LEFT",
-          "title": "Button",
-          "type": "string"
-        }
-      },
-      "required": [
-        "path"
-      ],
-      "title": "ui_clickArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": false,
-      "destructiveHint": true,
-      "openWorldHint": true
-    }
-  },
-  {
-    "name": "ui_set_text",
-    "description": "Replace text in a discovered edit control using viewer input, then read back its value. Does not press Enter.",
-    "inputSchema": {
-      "properties": {
-        "path": {
-          "title": "Path",
-          "type": "string"
-        },
-        "text": {
-          "title": "Text",
-          "type": "string"
-        }
-      },
-      "required": [
-        "path",
-        "text"
-      ],
-      "title": "ui_set_textArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": false,
-      "destructiveHint": true,
-      "openWorldHint": true
-    }
-  },
-  {
-    "name": "ui_select",
-    "description": "Select a discovered combobox item by its actual value.",
-    "inputSchema": {
-      "properties": {
-        "path": {
-          "title": "Path",
-          "type": "string"
-        },
-        "value": {
-          "title": "Value"
-        }
-      },
-      "required": [
-        "path",
-        "value"
-      ],
-      "title": "ui_selectArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": false,
-      "destructiveHint": true,
-      "openWorldHint": true
-    }
-  },
-  {
-    "name": "ui_inspect",
-    "description": "Inspect a known UI path's geometry and enabled/visible state. Use floater_open and ui_find to discover panel controls.",
-    "inputSchema": {
-      "properties": {
-        "path": {
-          "default": "/main_view",
-          "title": "Path",
-          "type": "string"
-        }
-      },
-      "title": "ui_inspectArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": true,
-      "destructiveHint": false,
-      "openWorldHint": false
-    }
-  },
-  {
-    "name": "ui_press_key",
-    "description": "Press and release a viewer key, with optional CTL/ALT/SHIFT modifiers. A focused form may act on Enter.",
-    "inputSchema": {
-      "properties": {
-        "keysym": {
-          "title": "Keysym",
-          "type": "string"
-        },
-        "modifiers": {
-          "default": [],
-          "items": {
-            "type": "string"
-          },
-          "title": "Modifiers",
-          "type": "array"
-        }
-      },
-      "required": [
-        "keysym"
-      ],
-      "title": "ui_press_keyArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": false,
-      "destructiveHint": true,
-      "openWorldHint": true
-    }
-  },
-  {
-    "name": "ui_list_menus",
-    "description": "List viewer menu entries from this installation's XUI, filter by name/label/function. These describe menus, not guaranteed enabled actions.",
-    "inputSchema": {
-      "properties": {
-        "query": {
-          "default": "",
-          "title": "Query",
-          "type": "string"
-        }
-      },
-      "title": "ui_list_menusArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": true,
-      "destructiveHint": false,
-      "openWorldHint": false
-    }
-  },
-  {
-    "name": "ui_invoke_menu",
-    "description": "Invoke an actual menu entry from installed XUI by exact name; unknown callback names are never dispatched. This may open a native file picker.",
-    "inputSchema": {
-      "properties": {
-        "name": {
-          "title": "Name",
-          "type": "string"
-        }
-      },
-      "required": [
-        "name"
-      ],
-      "title": "ui_invoke_menuArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": false,
-      "destructiveHint": true,
-      "openWorldHint": true
-    }
-  },
-  {
-    "name": "floater_list",
-    "description": "List registered viewer floaters and their XUI files.",
-    "inputSchema": {
-      "properties": {},
-      "title": "floater_listArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": true,
-      "destructiveHint": false,
-      "openWorldHint": false
-    }
-  },
-  {
-    "name": "floater_open",
-    "description": "Open a registered viewer floater and check its visibility.",
-    "inputSchema": {
-      "properties": {
-        "name": {
-          "title": "Name",
-          "type": "string"
-        }
-      },
-      "required": [
-        "name"
-      ],
-      "title": "floater_openArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": false,
-      "destructiveHint": true,
       "openWorldHint": true
     }
   },
@@ -526,6 +41,7 @@
     "name": "avatar_position",
     "description": "Read avatar position/orientation from the viewer.",
     "inputSchema": {
+      "additionalProperties": false,
       "properties": {},
       "title": "avatar_positionArguments",
       "type": "object"
@@ -533,13 +49,29 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "avatar_stop",
+    "description": "Cancel automatic movement and read its resulting state.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "title": "avatar_stopArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
     }
   },
   {
     "name": "avatar_walk_to",
     "description": "Start walking to GLOBAL coordinates. Poll avatar_movement_status and verify position; this is not pathfinding success.",
     "inputSchema": {
+      "additionalProperties": false,
       "properties": {
         "global_position": {
           "items": {
@@ -572,147 +104,12 @@
     }
   },
   {
-    "name": "avatar_movement_status",
-    "description": "Read autopilot progress and current avatar position.",
+    "name": "camera_release",
+    "description": "Release scripted camera control. This returns to viewer camera behavior, not an exact saved manual camera pose.",
     "inputSchema": {
+      "additionalProperties": false,
       "properties": {},
-      "title": "avatar_movement_statusArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": true,
-      "destructiveHint": false,
-      "openWorldHint": false
-    }
-  },
-  {
-    "name": "avatar_stop",
-    "description": "Cancel automatic movement and read its resulting state.",
-    "inputSchema": {
-      "properties": {},
-      "title": "avatar_stopArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": false,
-      "destructiveHint": true,
-      "openWorldHint": true
-    }
-  },
-  {
-    "name": "world_objects",
-    "description": "List nearby objects as reported by the viewer. Availability depends on simulator interest and viewer loading.",
-    "inputSchema": {
-      "properties": {
-        "distance": {
-          "default": 32,
-          "title": "Distance",
-          "type": "number"
-        }
-      },
-      "title": "world_objectsArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": true,
-      "destructiveHint": false,
-      "openWorldHint": false
-    }
-  },
-  {
-    "name": "inventory_search",
-    "description": "Search a specific inventory folder recursively, returning item metadata. Does not rez, purchase or upload anything.",
-    "inputSchema": {
-      "properties": {
-        "folder_id": {
-          "title": "Folder Id",
-          "type": "string"
-        },
-        "name": {
-          "title": "Name",
-          "type": "string"
-        },
-        "limit": {
-          "default": 50,
-          "title": "Limit",
-          "type": "integer"
-        },
-        "asset_type": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Asset Type"
-        }
-      },
-      "required": [
-        "folder_id",
-        "name"
-      ],
-      "title": "inventory_searchArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": true,
-      "destructiveHint": false,
-      "openWorldHint": false
-    }
-  },
-  {
-    "name": "setting_get",
-    "description": "Read a named viewer setting; default group is Global.",
-    "inputSchema": {
-      "properties": {
-        "key": {
-          "title": "Key",
-          "type": "string"
-        },
-        "group": {
-          "default": "Global",
-          "title": "Group",
-          "type": "string"
-        }
-      },
-      "required": [
-        "key"
-      ],
-      "title": "setting_getArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": true,
-      "destructiveHint": false,
-      "openWorldHint": false
-    }
-  },
-  {
-    "name": "setting_set",
-    "description": "Change a viewer setting and return before/after readback. Some settings persist across restarts.",
-    "inputSchema": {
-      "properties": {
-        "key": {
-          "title": "Key",
-          "type": "string"
-        },
-        "value": {
-          "title": "Value"
-        },
-        "group": {
-          "default": "Global",
-          "title": "Group",
-          "type": "string"
-        }
-      },
-      "required": [
-        "key",
-        "value"
-      ],
-      "title": "setting_setArguments",
+      "title": "camera_releaseArguments",
       "type": "object"
     },
     "annotations": {
@@ -725,6 +122,7 @@
     "name": "camera_set",
     "description": "Set a fixed camera and focus in REGION coordinates. Viewport capture is needed to verify composition.",
     "inputSchema": {
+      "additionalProperties": false,
       "properties": {
         "position": {
           "items": {
@@ -755,56 +153,35 @@
     }
   },
   {
-    "name": "camera_release",
-    "description": "Release scripted camera control. This returns to viewer camera behavior, not an exact saved manual camera pose.",
+    "name": "capabilities_refresh",
+    "description": "Discover all APIs and operations exposed by this running viewer; refresh dynamic MCP tool discovery.",
     "inputSchema": {
+      "additionalProperties": false,
       "properties": {},
-      "title": "camera_releaseArguments",
+      "title": "capabilities_refreshArguments",
       "type": "object"
     },
     "annotations": {
-      "readOnlyHint": false,
-      "destructiveHint": true,
+      "readOnlyHint": true,
+      "destructiveHint": false,
       "openWorldHint": true
     }
   },
   {
-    "name": "snapshot",
-    "description": "Capture Firestorm's rendered image and return an MCP image plus saved PNG and hash. Render evidence alone does not prove upload or visibility to others.",
+    "name": "capture_manifest_read",
+    "description": "Read a saved capture manifest created by this server.",
     "inputSchema": {
+      "additionalProperties": false,
       "properties": {
-        "label": {
-          "default": "snapshot",
-          "title": "Label",
-          "type": "string"
-        },
-        "width": {
-          "default": 1280,
-          "title": "Width",
-          "type": "integer"
-        },
-        "height": {
-          "default": 720,
-          "title": "Height",
-          "type": "integer"
-        },
-        "show_ui": {
-          "default": false,
-          "title": "Show Ui",
-          "type": "boolean"
-        },
-        "show_hud": {
-          "default": false,
-          "title": "Show Hud",
-          "type": "boolean"
-        },
-        "layer": {
-          "default": "COLOR",
-          "title": "Layer",
+        "filename": {
+          "title": "Filename",
           "type": "string"
         }
       },
-      "title": "snapshotArguments",
+      "required": [
+        "filename"
+      ],
+      "title": "capture_manifest_readArguments",
       "type": "object"
     },
     "annotations": {
@@ -817,6 +194,7 @@
     "name": "capture_orbit",
     "description": "Capture repeatable orbit views around a REGION-coordinate focus and save a manifest. Releases scripted camera in finally. Caller must identify whether the subject is local preview or a server asset.",
     "inputSchema": {
+      "additionalProperties": false,
       "properties": {
         "focus": {
           "items": {
@@ -876,31 +254,171 @@
     }
   },
   {
-    "name": "asset_inspect",
-    "description": "Inspect a local COLLADA/glTF/GLB/texture export and record its SHA256. This checks file metadata, not upload eligibility, LOD quality, land impact or in-world appearance.",
+    "name": "connection_status",
+    "description": "Check whether the local Firestorm LEAP helper is connected. Does not log in or change the viewer.",
     "inputSchema": {
-      "properties": {
-        "filename": {
-          "title": "Filename",
-          "type": "string"
-        }
-      },
-      "required": [
-        "filename"
-      ],
-      "title": "asset_inspectArguments",
+      "additionalProperties": false,
+      "properties": {},
+      "title": "connection_statusArguments",
       "type": "object"
     },
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "control_acquire",
+    "description": "Acquire exclusive bridge control for a multi-step workflow. Other clients can still read connection status/events. Renew before expiry and release in finally.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "default": "Blender asset verification",
+          "title": "Label",
+          "type": "string"
+        },
+        "seconds": {
+          "default": 300,
+          "title": "Seconds",
+          "type": "number"
+        }
+      },
+      "title": "control_acquireArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "control_release",
+    "description": "Release this client's exclusive control lease.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "title": "control_releaseArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "events_read",
+    "description": "Read subscribed viewer events after a cursor. The dropped flag identifies buffer overflow; do not infer missing events.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "after": {
+          "default": 0,
+          "title": "After",
+          "type": "integer"
+        }
+      },
+      "title": "events_readArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "events_subscribe",
+    "description": "Subscribe to a named viewer event stream, such as StartupState or LLAutopilot. Events are bounded and remain local until read.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source"
+      ],
+      "title": "events_subscribeArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "events_unsubscribe",
+    "description": "Stop subscribing to a viewer event stream.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source"
+      ],
+      "title": "events_unsubscribeArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "floater_list",
+    "description": "List registered viewer floaters and their XUI files.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "title": "floater_listArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "floater_open",
+    "description": "Open a registered viewer floater and check its visibility.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "floater_openArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
     }
   },
   {
     "name": "image_compare",
     "description": "Compare two same-size images and save an absolute-difference PNG. Metrics do not establish semantic or material correctness.",
     "inputSchema": {
+      "additionalProperties": false,
       "properties": {
         "reference": {
           "title": "Reference",
@@ -919,22 +437,53 @@
       "type": "object"
     },
     "annotations": {
-      "readOnlyHint": true,
-      "destructiveHint": false,
+      "readOnlyHint": false,
+      "destructiveHint": true,
       "openWorldHint": false
     }
   },
   {
-    "name": "local_mesh_open",
-    "description": "Open Firestorm's Local Mesh panel. Its local replacements are visible only in this viewer and do not prove server upload.",
+    "name": "inventory_search",
+    "description": "Search a specific inventory folder recursively, returning item metadata. Does not rez, purchase or upload anything.",
     "inputSchema": {
-      "properties": {},
-      "title": "local_mesh_openArguments",
+      "additionalProperties": false,
+      "properties": {
+        "folder_id": {
+          "title": "Folder Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "limit": {
+          "default": 50,
+          "title": "Limit",
+          "type": "integer"
+        },
+        "asset_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Asset Type"
+        }
+      },
+      "required": [
+        "folder_id",
+        "name"
+      ],
+      "title": "inventory_searchArguments",
       "type": "object"
     },
     "annotations": {
-      "readOnlyHint": false,
-      "destructiveHint": true,
+      "readOnlyHint": true,
+      "destructiveHint": false,
       "openWorldHint": true
     }
   },
@@ -942,6 +491,7 @@
     "name": "local_mesh_auto_reload",
     "description": "Set local mesh automatic reload so Blender exports can refresh in the viewer. Returns the previous settings for restoration.",
     "inputSchema": {
+      "additionalProperties": false,
       "properties": {
         "enabled": {
           "title": "Enabled",
@@ -966,9 +516,76 @@
     }
   },
   {
+    "name": "local_mesh_open",
+    "description": "Open Firestorm's Local Mesh panel. Its local replacements are visible only in this viewer and do not prove server upload.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "title": "local_mesh_openArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "local_mesh_status",
+    "description": "Read Local Mesh's selected item/object and displayed import log. This is local preview evidence, not a simulator upload.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "title": "local_mesh_statusArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "mesh_preview_camera",
+    "description": "Adjust only the open mesh uploader's preview camera using a bounded path-targeted drag. horizontal/vertical are fractions of its freshly inspected preview rectangle, each -0.45 to 0.45. Positive vertical zooms in; zoom requires horizontal=0. Pan/orbit use the viewer's modifiers. Does not move the world camera. Capture afterward to verify composition; no exact pose getter/restoration is available.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "default": "zoom",
+          "enum": [
+            "zoom",
+            "pan",
+            "orbit"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "horizontal": {
+          "default": 0,
+          "title": "Horizontal",
+          "type": "number"
+        },
+        "vertical": {
+          "default": 0.2,
+          "title": "Vertical",
+          "type": "number"
+        }
+      },
+      "title": "mesh_preview_cameraArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
     "name": "mesh_upload_open",
     "description": "Open the standard mesh upload preview workflow. Does not submit an upload or authorize an upload fee.",
     "inputSchema": {
+      "additionalProperties": false,
       "properties": {},
       "title": "mesh_upload_openArguments",
       "type": "object"
@@ -983,6 +600,7 @@
     "name": "mesh_upload_status",
     "description": "Read mesh-import preview LOD sources/files/counts, physics, dimensions, warnings, displayed weights and fee with control visibility. Does not calculate or submit an upload. Quote freshness and file-content bindings remain unverified.",
     "inputSchema": {
+      "additionalProperties": false,
       "properties": {},
       "title": "mesh_upload_statusArguments",
       "type": "object"
@@ -990,43 +608,520 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
-    "name": "local_mesh_status",
-    "description": "Read Local Mesh's selected item/object and displayed import log. This is local preview evidence, not a simulator upload.",
+    "name": "native_file_choose",
+    "description": "Select an existing file in a freshly discovered Firestorm Open dialog. Verifies window ownership and filename readback. Import success must be checked in viewer state. Know which import/upload action opened the picker first.",
     "inputSchema": {
-      "properties": {},
-      "title": "local_mesh_statusArguments",
-      "type": "object"
-    },
-    "annotations": {
-      "readOnlyHint": true,
-      "destructiveHint": false,
-      "openWorldHint": false
-    }
-  },
-  {
-    "name": "capture_manifest_read",
-    "description": "Read a saved capture manifest created by this server.",
-    "inputSchema": {
+      "additionalProperties": false,
       "properties": {
+        "dialog_id": {
+          "title": "Dialog Id",
+          "type": "integer"
+        },
         "filename": {
           "title": "Filename",
           "type": "string"
         }
       },
       "required": [
+        "dialog_id",
         "filename"
       ],
-      "title": "capture_manifest_readArguments",
+      "title": "native_file_chooseArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "native_file_dialogs",
+    "description": "List recognized Windows Open-file dialogs owned by this Firestorm installation. English common dialogs only; unsupported layouts require manual selection.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "title": "native_file_dialogsArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "setting_get",
+    "description": "Read a named viewer setting; default group is Global.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "group": {
+          "default": "Global",
+          "title": "Group",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key"
+      ],
+      "title": "setting_getArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "setting_set",
+    "description": "Change a viewer setting and return before/after readback. Some settings persist across restarts.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "anyOf": [
+            {
+              "type": "object"
+            },
+            {
+              "type": "array"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "group": {
+          "default": "Global",
+          "title": "Group",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "value"
+      ],
+      "title": "setting_setArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "snapshot",
+    "description": "Capture Firestorm's rendered image and return an MCP image plus saved PNG and hash. Render evidence alone does not prove upload or visibility to others.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "default": "snapshot",
+          "title": "Label",
+          "type": "string"
+        },
+        "width": {
+          "default": 1280,
+          "title": "Width",
+          "type": "integer"
+        },
+        "height": {
+          "default": 720,
+          "title": "Height",
+          "type": "integer"
+        },
+        "show_ui": {
+          "default": false,
+          "title": "Show Ui",
+          "type": "boolean"
+        },
+        "show_hud": {
+          "default": false,
+          "title": "Show Hud",
+          "type": "boolean"
+        },
+        "layer": {
+          "default": "COLOR",
+          "title": "Layer",
+          "type": "string"
+        }
+      },
+      "title": "snapshotArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "ui_click",
+    "description": "Click a visible, enabled control by path. Supply floater (registered name) to invoke a unique button's callback instead of coordinate input. Optional observe_path returns before/after UI state. Handling/callback completion is not effect verification; inspect the readback.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "button": {
+          "default": "LEFT",
+          "title": "Button",
+          "type": "string"
+        },
+        "floater": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Floater"
+        },
+        "observe_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Observe Path"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "title": "ui_clickArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "ui_find",
+    "description": "Find UI paths in an explicit narrow subtree. Search path or basename using contains/exact/prefix/glob matching (case-insensitive). max_depth=1 selects the root and immediate children. Pages have explicit next_offset/truncated; the viewer still enumerates the entire requested subtree, so keep under narrow.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "query": {
+          "title": "Query",
+          "type": "string"
+        },
+        "under": {
+          "default": "",
+          "title": "Under",
+          "type": "string"
+        },
+        "limit": {
+          "default": 50,
+          "title": "Limit",
+          "type": "integer"
+        },
+        "include_info": {
+          "default": false,
+          "title": "Include Info",
+          "type": "boolean"
+        },
+        "offset": {
+          "default": 0,
+          "title": "Offset",
+          "type": "integer"
+        },
+        "search_in": {
+          "default": "path",
+          "enum": [
+            "path",
+            "name"
+          ],
+          "title": "Search In",
+          "type": "string"
+        },
+        "match": {
+          "default": "contains",
+          "enum": [
+            "contains",
+            "exact",
+            "prefix",
+            "glob"
+          ],
+          "title": "Match",
+          "type": "string"
+        },
+        "max_depth": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Depth"
+        }
+      },
+      "required": [
+        "query"
+      ],
+      "title": "ui_findArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "ui_get_value",
+    "description": "Read the value of a specific discovered UI control. Use targeted paths to avoid unrelated chat or private fields.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "title": "ui_get_valueArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "ui_inspect",
+    "description": "Inspect a known UI path's geometry and enabled/visible state. Use floater_open and ui_find to discover panel controls.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "default": "/main_view",
+          "title": "Path",
+          "type": "string"
+        }
+      },
+      "title": "ui_inspectArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "ui_invoke_menu",
+    "description": "Invoke an actual menu entry from installed XUI by exact name; unknown callback names are never dispatched. This may open a native file picker.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "ui_invoke_menuArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "ui_list_menus",
+    "description": "List viewer menu entries from this installation's XUI, filter by name/label/function. These describe menus, not guaranteed enabled actions.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "query": {
+          "default": "",
+          "title": "Query",
+          "type": "string"
+        }
+      },
+      "title": "ui_list_menusArguments",
       "type": "object"
     },
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
       "openWorldHint": false
+    }
+  },
+  {
+    "name": "ui_press_key",
+    "description": "Press/release a key targeted to a visible enabled path and return UI readback. Path is required: the viewer sets keyboard focus to it during dispatch. Modifiers are CTL/ALT/SHIFT/MAC_CONTROL. Enter can commit a form. Human input and viewer shortcuts can still interfere; verify the returned state.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "keysym": {
+          "title": "Keysym",
+          "type": "string"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "modifiers": {
+          "default": [],
+          "items": {
+            "enum": [
+              "CTL",
+              "ALT",
+              "SHIFT",
+              "MAC_CONTROL"
+            ],
+            "type": "string"
+          },
+          "title": "Modifiers",
+          "type": "array"
+        },
+        "observe_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Observe Path"
+        }
+      },
+      "required": [
+        "keysym",
+        "path"
+      ],
+      "title": "ui_press_keyArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "ui_select",
+    "description": "Select a visible enabled combobox item by actual value, when supported by the viewer, and compare selected-value readback. Older viewers require path-targeted ui_press_key with readback.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "anyOf": [
+            {
+              "type": "object"
+            },
+            {
+              "type": "array"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "path",
+        "value"
+      ],
+      "title": "ui_selectArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "ui_set_text",
+    "description": "Replace text in a discovered edit control using viewer input, then read back its value. Does not press Enter.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "text"
+      ],
+      "title": "ui_set_textArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
     }
   },
   {
@@ -1038,7 +1133,28 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "group_id": {}
+            "group_id": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -1046,9 +1162,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1074,8 +1194,50 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "group_id": {},
-            "message": {}
+            "group_id": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "message": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -1084,9 +1246,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1112,7 +1278,28 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "group_id": {}
+            "group_id": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -1120,9 +1307,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1151,9 +1342,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1167,7 +1362,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -1179,7 +1374,28 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "item_id": {}
+            "item_id": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -1187,9 +1403,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1203,7 +1423,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -1218,9 +1438,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1234,7 +1458,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -1249,9 +1473,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1265,7 +1493,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -1280,9 +1508,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1296,7 +1528,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -1311,9 +1543,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1327,7 +1563,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -1342,9 +1578,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1358,7 +1598,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -1373,9 +1613,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1389,7 +1633,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -1404,9 +1648,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1432,7 +1680,28 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "item_id": {}
+            "item_id": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -1440,9 +1709,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1471,9 +1744,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1502,9 +1779,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1533,9 +1814,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1564,9 +1849,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1595,9 +1884,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1626,9 +1919,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1657,9 +1954,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1688,9 +1989,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1716,7 +2021,28 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "active": {}
+            "active": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -1724,9 +2050,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1752,7 +2082,28 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "target_global": {}
+            "target_global": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -1760,9 +2111,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1791,9 +2146,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1819,7 +2178,28 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "item_id": {}
+            "item_id": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -1827,9 +2207,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1858,9 +2242,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1889,9 +2277,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1920,9 +2312,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1948,7 +2344,28 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "items_id": {}
+            "items_id": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -1956,9 +2373,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -1987,9 +2408,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2003,7 +2428,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -2018,9 +2443,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2034,7 +2463,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -2046,8 +2475,50 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "items_id": {},
-            "replace": {}
+            "items_id": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "replace": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -2056,9 +2527,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2087,9 +2562,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2118,9 +2597,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2149,9 +2632,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2165,7 +2652,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -2180,9 +2667,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2196,7 +2687,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -2208,8 +2699,50 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "button": {},
-            "name": {}
+            "button": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "name": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -2218,9 +2751,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2249,9 +2786,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2265,7 +2806,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -2277,7 +2818,28 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "name": {}
+            "name": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -2285,9 +2847,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2313,7 +2879,28 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "name": {}
+            "name": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -2321,9 +2908,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2337,7 +2928,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -2349,7 +2940,28 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "name": {}
+            "name": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -2357,9 +2969,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2385,7 +3001,28 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "name": {}
+            "name": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -2393,9 +3030,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2424,9 +3065,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2440,7 +3085,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -2455,9 +3100,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2471,7 +3120,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -2486,9 +3135,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2517,9 +3170,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2545,7 +3202,28 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "folder_id": {}
+            "folder_id": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -2553,9 +3231,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2584,9 +3266,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2600,7 +3286,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -2612,7 +3298,28 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "ft_name": {}
+            "ft_name": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -2620,9 +3327,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2636,7 +3347,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -2648,7 +3359,28 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "folder_id": {}
+            "folder_id": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -2656,9 +3388,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2672,7 +3408,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -2687,9 +3423,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2703,7 +3443,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -2715,7 +3455,28 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "item_ids": {}
+            "item_ids": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -2723,9 +3484,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2739,7 +3504,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -2751,7 +3516,28 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "uuid": {}
+            "uuid": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -2759,9 +3545,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2787,7 +3577,28 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "channel": {}
+            "channel": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -2795,9 +3606,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2826,9 +3641,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2854,7 +3673,28 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "channel": {}
+            "channel": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -2862,9 +3702,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2878,7 +3722,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -2893,9 +3737,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2909,7 +3757,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -2924,9 +3772,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2952,7 +3804,28 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "uuid": {}
+            "uuid": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -2960,9 +3833,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -2991,9 +3868,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3022,9 +3903,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3053,9 +3938,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3084,9 +3973,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3115,9 +4008,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3146,9 +4043,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3177,9 +4078,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3193,7 +4098,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -3208,9 +4113,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3224,7 +4133,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -3239,9 +4148,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3255,7 +4168,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -3270,9 +4183,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3301,9 +4218,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3332,9 +4253,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3363,9 +4288,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3379,7 +4308,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -3394,9 +4323,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3425,9 +4358,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3456,9 +4393,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3487,9 +4428,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3518,9 +4463,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3546,8 +4495,50 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "group": {},
-            "key": {}
+            "group": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "key": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -3556,9 +4547,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3572,7 +4567,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -3587,9 +4582,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3603,7 +4602,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -3615,8 +4614,50 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "group": {},
-            "key": {}
+            "group": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "key": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -3625,9 +4666,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3653,8 +4698,50 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "group": {},
-            "key": {}
+            "group": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "key": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -3663,9 +4750,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3691,7 +4782,28 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "group": {}
+            "group": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -3699,9 +4811,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3715,7 +4831,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -3730,9 +4846,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3758,7 +4878,28 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "filename": {}
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -3766,9 +4907,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3797,9 +4942,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3813,7 +4962,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -3828,9 +4977,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3844,7 +4997,7 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
     }
   },
   {
@@ -3859,9 +5012,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3890,9 +5047,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3921,9 +5082,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3952,9 +5117,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -3983,9 +5152,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -4014,9 +5187,13 @@
           "additionalProperties": true
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -4042,7 +5219,28 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "function": {}
+            "function": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -4050,9 +5248,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -4078,7 +5280,28 @@
         "arguments": {
           "type": "object",
           "properties": {
-            "path": {}
+            "path": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "array"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
           },
           "additionalProperties": true,
           "required": [
@@ -4086,9 +5309,13 @@
           ]
         },
         "expect_reply": {
-          "type": [
-            "boolean",
-            "null"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "timeout": {
@@ -4102,7 +5329,114 @@
     "annotations": {
       "readOnlyHint": true,
       "destructiveHint": false,
-      "openWorldHint": false
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_api_inspect",
+    "description": "Read the live description and required arguments for an API or operation. Discover before calling unfamiliar operations.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "api": {
+          "title": "Api",
+          "type": "string"
+        },
+        "operation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Operation"
+        }
+      },
+      "required": [
+        "api"
+      ],
+      "title": "viewer_api_inspectArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "viewer_call",
+    "description": "Invoke any discovered viewer API operation. arguments can contain typed LLSD values: {$uuid: string}, {$uri: string}, {$binary_base64: string}. Read state after writes; timeouts must not be blindly retried.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "api": {
+          "title": "Api",
+          "type": "string"
+        },
+        "operation": {
+          "title": "Operation",
+          "type": "string"
+        },
+        "arguments": {
+          "additionalProperties": true,
+          "default": {},
+          "title": "Arguments",
+          "type": "object"
+        },
+        "expect_reply": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expect Reply"
+        },
+        "timeout": {
+          "default": 15,
+          "title": "Timeout",
+          "type": "number"
+        }
+      },
+      "required": [
+        "api",
+        "operation"
+      ],
+      "title": "viewer_callArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "world_objects",
+    "description": "List nearby objects as reported by the viewer. Availability depends on simulator interest and viewer loading.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "distance": {
+          "default": 32,
+          "title": "Distance",
+          "type": "number"
+        }
+      },
+      "title": "world_objectsArguments",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "openWorldHint": true
     }
   }
 ]
