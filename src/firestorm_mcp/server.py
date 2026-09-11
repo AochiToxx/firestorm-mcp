@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import base64
+import fnmatch
 import inspect
 import json
 import math
@@ -25,7 +26,7 @@ import anyio
 from jsonschema import Draft202012Validator
 from pydantic import ConfigDict, create_model
 
-from .assets import inspect_asset, compare_images, file_record
+from .assets import inspect_asset, compare_images, file_record, capture_quality
 from .client import BridgeClient
 from .protocol import json_default
 from .paths import data_root, viewer_directory
@@ -142,10 +143,22 @@ class Tools:
         from PIL import Image
         with Image.open(filename) as image:
             actual = image.size
+            quality = capture_quality(image)
             if image.format != "PNG":
                 image.save(filename, format="PNG")
         return {**file_record(filename), "width": actual[0], "height": actual[1], "requested_size": [width, height],
-                "evidence_kind": "viewer_render", "simulator_asset_verified": False, "_image_path": str(filename)}
+                "quality": quality, "evidence_kind": "viewer_render", "simulator_asset_verified": False, "_image_path": str(filename)}
+
+    def ui_observation(self, path):
+        info = self.client.call("LLWindow", "getInfo", {"path": path}, expect_reply=True)
+        result = {"path": path, "info": info, "value_available": False}
+        try:
+            value = self.client.call("UI", "getValue", {"path": path}, expect_reply=True)
+            if isinstance(value, dict) and "value" in value:
+                result.update(value_available=True, value=value["value"])
+        except (ValueError, RuntimeError):
+            pass  # A view need not be a value-bearing control.
+        return result
 
     def menus(self):
         path = self.viewer_dir / "skins/default/xui/en/menu_viewer.xml"
@@ -251,14 +264,36 @@ class Tools:
         def events_read(after: int = 0):
             return c.rpc("events", after=after)
 
-        @reg("Find UI control paths inside an explicit subtree, for example /main_view/menu_stack/world_panel/Floater View/Local Mesh. floater_open supplies the panel's ui_path when resolvable. Narrow scope avoids enumerating an entire loaded inventory.", True)
-        def ui_find(query: str, under: str = "", limit: int = 50, include_info: bool = False):
+        @reg("Find UI paths in an explicit narrow subtree. Search path or basename using contains/exact/prefix/glob matching (case-insensitive). max_depth=1 selects the root and immediate children. Pages have explicit next_offset/truncated; the viewer still enumerates the entire requested subtree, so keep under narrow.", True)
+        def ui_find(query: str, under: str = "", limit: int = 50, include_info: bool = False,
+                    offset: int = 0, search_in: typing.Literal["path", "name"] = "path",
+                    match: typing.Literal["contains", "exact", "prefix", "glob"] = "contains",
+                    max_depth: int | None = None):
             if not under:
                 raise ValueError("Supply a narrow under path, such as the ui_path from floater_open, or /main_view/Menu Holder for menus")
-            response = c.call("LLWindow", "getPaths", {"under": under} if under else {}, expect_reply=True)
-            paths = [p for p in response.get("paths", []) if query.casefold() in p.casefold()]
-            selected = paths[:max(1, min(limit, 200))]
-            return {"total_matches": len(paths), "paths": selected,
+            if not 1 <= limit <= 200 or offset < 0 or (max_depth is not None and max_depth < 0):
+                raise ValueError("Use limit 1-200, a nonnegative offset and nonnegative max_depth")
+            response = c.call("LLWindow", "getPaths", {"under": under}, expect_reply=True)
+            base = under.rstrip("/")
+            needle = query.casefold()
+            paths = []
+            for path in sorted(set(response.get("paths", []))):
+                if path != base and not path.startswith(base + "/"):
+                    continue
+                depth = path[len(base):].count("/")
+                if max_depth is not None and depth > max_depth:
+                    continue
+                haystack = (path.rsplit("/", 1)[-1] if search_in == "name" else path).casefold()
+                matches = {"contains": lambda: needle in haystack, "exact": lambda: needle == haystack,
+                           "prefix": lambda: haystack.startswith(needle),
+                           "glob": lambda: fnmatch.fnmatchcase(haystack, needle)}
+                if matches[match]():
+                    paths.append(path)
+            selected = paths[offset:offset + limit]
+            next_offset = offset + len(selected) if offset + len(selected) < len(paths) else None
+            return {"total_matches": len(paths), "paths": selected, "offset": offset,
+                    "returned": len(selected), "next_offset": next_offset, "truncated": next_offset is not None,
+                    "pagination_consistency": "live_query_per_page_not_a_snapshot",
                     "info": [c.call("LLWindow", "getInfo", {"path": p}, expect_reply=True) for p in selected] if include_info else []}
 
         @reg("Read the value of a specific discovered UI control. Use targeted paths to avoid unrelated chat or private fields.", True)
@@ -268,16 +303,40 @@ class Tools:
                 raise ValueError("This path does not expose a UI control value; verify it with ui_inspect/ui_find")
             return result
 
-        @reg("Click a visible, enabled discovered control by path. Returns input handling status, not proof of a simulator-side effect.")
-        def ui_click(path: str, button: str = "LEFT"):
+        @reg("Click a visible, enabled control by path. Supply floater (registered name) to invoke a unique button's callback instead of coordinate input. Optional observe_path returns before/after UI state. Handling/callback completion is not effect verification; inspect the readback.")
+        def ui_click(path: str, button: str = "LEFT", floater: str | None = None, observe_path: str | None = None):
             info = c.call("LLWindow", "getInfo", {"path": path}, expect_reply=True)
             if not info.get("visible_chain") or not info.get("enabled_chain"):
                 raise ValueError("Control is hidden or disabled")
             if button not in ("LEFT", "MIDDLE", "RIGHT"):
                 raise ValueError("Unknown mouse button")
-            down = c.call("LLWindow", "mouseDown", {"path": path, "button": button}, expect_reply=True)
-            up = c.call("LLWindow", "mouseUp", {"path": path, "button": button}, expect_reply=True)
-            return {"down": down, "up": up, "verified_effect": False}
+            before = self.ui_observation(observe_path) if observe_path else None
+            if floater:
+                if button != "LEFT":
+                    raise ValueError("Registry callbacks use LEFT button semantics")
+                registered = floater_list()
+                if floater not in registered:
+                    raise ValueError("Unknown floater; use floater_list")
+                panel = ET.parse(self.viewer_dir / "skins/default/xui/en" / registered[floater]).getroot().get("name")
+                base = "/main_view/menu_stack/world_panel/Floater View/" + panel
+                paths = c.call("LLWindow", "getPaths", {"under": base}, expect_reply=True).get("paths", [])
+                name = path.rsplit("/", 1)[-1]
+                matches = [p for p in paths if p.rsplit("/", 1)[-1] == name]
+                if matches != [path] or not path.startswith(base + "/"):
+                    raise ValueError("Button must resolve uniquely inside the registered floater")
+                result = {"method": "registry_callback", "reply": c.call("LLFloaterReg", "clickButton",
+                    {"name": floater, "button": name}, expect_reply=True)}
+            else:
+                down = c.call("LLWindow", "mouseDown", {"path": path, "button": button}, expect_reply=True)
+                up = c.call("LLWindow", "mouseUp", {"path": path, "button": button}, expect_reply=True)
+                result = {"method": "mouse", "down": down, "up": up}
+            result.update(verified_effect=False)
+            if observe_path:
+                try:
+                    result.update(before=before, after=self.ui_observation(observe_path))
+                except (ValueError, RuntimeError) as exc:
+                    result.update(before=before, after=None, readback_error=str(exc))
+            return result
 
         @reg("Replace text in a discovered edit control using viewer input, then read back its value. Does not press Enter.")
         def ui_set_text(path: str, text: str):
@@ -305,25 +364,44 @@ class Tools:
             observed = ui_get_value(path)
             return {"requested": text, "observed": observed, "matches": observed.get("value") == text}
 
-        @reg("Select a discovered combobox item by its actual value.")
+        @reg("Select a visible enabled combobox item by actual value, when supported by the viewer, and compare selected-value readback. Older viewers require path-targeted ui_press_key with readback.")
         def ui_select(path: str, value: typing.Any):
             if not self.apis:
                 self.refresh()
             if not any(op["name"] == "setSelectedByValue" for op in self.apis.get("UI", {}).get("ops", [])):
-                raise ValueError("This viewer does not expose selection by value. Use ui_click and ui_press_key with a screenshot/readback, or a newer viewer.")
-            return c.call("UI", "setSelectedByValue", {"path": path, "value": value}, expect_reply=True)
+                raise ValueError("This viewer does not expose selection by value. Use path-targeted ui_press_key and inspect selected-value readback, or a newer viewer.")
+            before = self.ui_observation(path)
+            if not before["info"].get("visible_chain") or not before["info"].get("enabled_chain"):
+                raise ValueError("Control is hidden or disabled")
+            reply = c.call("UI", "setSelectedByValue", {"path": path, "value": value}, expect_reply=True)
+            after = self.ui_observation(path)
+            return {"reply": reply, "before": before, "after": after, "requested": value,
+                    "matches": after["value"] == value if after["value_available"] else None,
+                    "verified_effect": False}
 
         @reg("Inspect a known UI path's geometry and enabled/visible state. Use floater_open and ui_find to discover panel controls.", True)
         def ui_inspect(path: str = "/main_view"):
             return c.call("LLWindow", "getInfo", {"path": path}, expect_reply=True)
 
-        @reg("Press and release a viewer key, with optional CTL/ALT/SHIFT modifiers. A focused form may act on Enter.")
-        def ui_press_key(keysym: str, modifiers: list[str] = []):
+        @reg("Press/release a key targeted to a visible enabled path and return UI readback. Path is required: the viewer sets keyboard focus to it during dispatch. Modifiers are CTL/ALT/SHIFT/MAC_CONTROL. Enter can commit a form. Human input and viewer shortcuts can still interfere; verify the returned state.")
+        def ui_press_key(keysym: str, path: str, modifiers: list[typing.Literal["CTL", "ALT", "SHIFT", "MAC_CONTROL"]] = [],
+                         observe_path: str | None = None):
             keysym = {"BACKSPACE": "Backsp", "DELETE": "Del", "RETURN": "Enter", "ESCAPE": "Esc",
                       "PAGEUP": "PgUp", "PAGEDOWN": "PgDn"}.get(keysym.upper(), keysym)
-            params = {"keysym": keysym, "mask": modifiers}
-            c.call("LLWindow", "keyDown", params, expect_reply=False)
-            return c.call("LLWindow", "keyUp", params, expect_reply=False)
+            info = c.call("LLWindow", "getInfo", {"path": path}, expect_reply=True)
+            if not info.get("visible_chain") or not info.get("enabled_chain"):
+                raise ValueError("Control is hidden or disabled")
+            before = self.ui_observation(observe_path or path)
+            params = {"path": path, "keysym": keysym, "mask": modifiers}
+            down = c.call("LLWindow", "keyDown", params, expect_reply=True)
+            up = c.call("LLWindow", "keyUp", params, expect_reply=True)
+            try:
+                after = self.ui_observation(observe_path or path)
+                readback_error = None
+            except (ValueError, RuntimeError) as exc:
+                after, readback_error = None, str(exc)
+            return {"path": path, "down": down, "up": up, "before": before, "after": after,
+                    "readback_error": readback_error, "verified_effect": False}
 
         @reg("List viewer menu entries from this installation's XUI, filter by name/label/function. These describe menus, not guaranteed enabled actions.", True)
         def ui_list_menus(query: str = ""):

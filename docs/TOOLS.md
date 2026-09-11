@@ -19,13 +19,13 @@ Generated from the current workflow definitions and historical Firestorm 7.2.4.8
 | `events_subscribe` | Subscribe to a named viewer event stream, such as StartupState or LLAutopilot. Events are bounded and remain local until read. |
 | `events_unsubscribe` | Stop subscribing to a viewer event stream. |
 | `events_read` | Read subscribed viewer events after a cursor. The dropped flag identifies buffer overflow; do not infer missing events. |
-| `ui_find` | Find UI control paths inside an explicit subtree, for example /main_view/menu_stack/world_panel/Floater View/Local Mesh. floater_open supplies the panel's ui_path when resolvable. Narrow scope avoids enumerating an entire loaded inventory. |
+| `ui_find` | Find UI paths in an explicit narrow subtree. Search path or basename using contains/exact/prefix/glob matching (case-insensitive). max_depth=1 selects the root and immediate children. Pages have explicit next_offset/truncated; the viewer still enumerates the entire requested subtree, so keep under narrow. |
 | `ui_get_value` | Read the value of a specific discovered UI control. Use targeted paths to avoid unrelated chat or private fields. |
-| `ui_click` | Click a visible, enabled discovered control by path. Returns input handling status, not proof of a simulator-side effect. |
+| `ui_click` | Click a visible, enabled control by path. Supply floater (registered name) to invoke a unique button's callback instead of coordinate input. Optional observe_path returns before/after UI state. Handling/callback completion is not effect verification; inspect the readback. |
 | `ui_set_text` | Replace text in a discovered edit control using viewer input, then read back its value. Does not press Enter. |
-| `ui_select` | Select a discovered combobox item by its actual value. |
+| `ui_select` | Select a visible enabled combobox item by actual value, when supported by the viewer, and compare selected-value readback. Older viewers require path-targeted ui_press_key with readback. |
 | `ui_inspect` | Inspect a known UI path's geometry and enabled/visible state. Use floater_open and ui_find to discover panel controls. |
-| `ui_press_key` | Press and release a viewer key, with optional CTL/ALT/SHIFT modifiers. A focused form may act on Enter. |
+| `ui_press_key` | Press/release a key targeted to a visible enabled path and return UI readback. Path is required: the viewer sets keyboard focus to it during dispatch. Modifiers are CTL/ALT/SHIFT/MAC_CONTROL. Enter can commit a form. Human input and viewer shortcuts can still interfere; verify the returned state. |
 | `ui_list_menus` | List viewer menu entries from this installation's XUI, filter by name/label/function. These describe menus, not guaranteed enabled actions. |
 | `ui_invoke_menu` | Invoke an actual menu entry from installed XUI by exact name; unknown callback names are never dispatched. This may open a native file picker. |
 | `floater_list` | List registered viewer floaters and their XUI files. |

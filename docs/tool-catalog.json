@@ -746,7 +746,7 @@
   },
   {
     "name": "ui_click",
-    "description": "Click a visible, enabled discovered control by path. Returns input handling status, not proof of a simulator-side effect.",
+    "description": "Click a visible, enabled control by path. Supply floater (registered name) to invoke a unique button's callback instead of coordinate input. Optional observe_path returns before/after UI state. Handling/callback completion is not effect verification; inspect the readback.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -758,6 +758,30 @@
           "default": "LEFT",
           "title": "Button",
           "type": "string"
+        },
+        "floater": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Floater"
+        },
+        "observe_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Observe Path"
         }
       },
       "required": [
@@ -774,7 +798,7 @@
   },
   {
     "name": "ui_find",
-    "description": "Find UI control paths inside an explicit subtree, for example /main_view/menu_stack/world_panel/Floater View/Local Mesh. floater_open supplies the panel's ui_path when resolvable. Narrow scope avoids enumerating an entire loaded inventory.",
+    "description": "Find UI paths in an explicit narrow subtree. Search path or basename using contains/exact/prefix/glob matching (case-insensitive). max_depth=1 selects the root and immediate children. Pages have explicit next_offset/truncated; the viewer still enumerates the entire requested subtree, so keep under narrow.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -796,6 +820,43 @@
           "default": false,
           "title": "Include Info",
           "type": "boolean"
+        },
+        "offset": {
+          "default": 0,
+          "title": "Offset",
+          "type": "integer"
+        },
+        "search_in": {
+          "default": "path",
+          "enum": [
+            "path",
+            "name"
+          ],
+          "title": "Search In",
+          "type": "string"
+        },
+        "match": {
+          "default": "contains",
+          "enum": [
+            "contains",
+            "exact",
+            "prefix",
+            "glob"
+          ],
+          "title": "Match",
+          "type": "string"
+        },
+        "max_depth": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Depth"
         }
       },
       "required": [
@@ -900,7 +961,7 @@
   },
   {
     "name": "ui_press_key",
-    "description": "Press and release a viewer key, with optional CTL/ALT/SHIFT modifiers. A focused form may act on Enter.",
+    "description": "Press/release a key targeted to a visible enabled path and return UI readback. Path is required: the viewer sets keyboard focus to it during dispatch. Modifiers are CTL/ALT/SHIFT/MAC_CONTROL. Enter can commit a form. Human input and viewer shortcuts can still interfere; verify the returned state.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -908,17 +969,40 @@
           "title": "Keysym",
           "type": "string"
         },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
         "modifiers": {
           "default": [],
           "items": {
+            "enum": [
+              "CTL",
+              "ALT",
+              "SHIFT",
+              "MAC_CONTROL"
+            ],
             "type": "string"
           },
           "title": "Modifiers",
           "type": "array"
+        },
+        "observe_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Observe Path"
         }
       },
       "required": [
-        "keysym"
+        "keysym",
+        "path"
       ],
       "title": "ui_press_keyArguments",
       "type": "object"
@@ -931,7 +1015,7 @@
   },
   {
     "name": "ui_select",
-    "description": "Select a discovered combobox item by its actual value.",
+    "description": "Select a visible enabled combobox item by actual value, when supported by the viewer, and compare selected-value readback. Older viewers require path-targeted ui_press_key with readback.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {

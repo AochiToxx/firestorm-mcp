@@ -47,6 +47,12 @@ Results retain JSON text and PNG image content for existing clients. Successful 
 
 Use `floater_open`'s discovered `ui_path`, then scope `ui_find` to it. Inspect a control before input. A combo-box parent can report handled input without opening its popup; the tested viewer exposes a `Drop Down Button` child, and a `ComboBox` popup whose visibility can be checked. Confirm the actual selected value afterward. A keyboard event with no proven focus can reach another viewer control. Do not retry blindly.
 
+In `0.3.0a1`, use `ui_find` with `search_in:"name"` to avoid matching every descendant of a named parent. `match` accepts `contains`, `exact`, `prefix` or shell-style `glob`, case-insensitively. `max_depth:1` includes the subtree root and immediate children. Results are sorted; follow `next_offset` until null and inspect `truncated`. Each page is a new live query, so changes between pages can shift results. Filtering/paging bounds the returned data, not the viewer's subtree enumeration cost.
+
+`ui_click` accepts optional `floater` (registered name, for example `upload_model`) and `observe_path`. The floater option resolves a unique button path and invokes its callback through `LLFloaterReg.clickButton`; it rejects ambiguous names and paths outside that panel. `observe_path` supplies before/after visibility and value readback. A callback reply is not proof of the intended effect.
+
+**Breaking change:** `ui_press_key` now requires `path`. Both key events include the freshly checked visible/enabled target; Firestorm's input listener sets focus during path-targeted dispatch. The result includes `before`/`after` UI observations (or a readback error). Use `observe_path` if a popup's selected value belongs to its parent. Enter can commit a form and viewer shortcuts/human input can still interfere. There is no automatic fallback to an unbound key. Selection on the tested viewer still requires live verification; native `ui_select` remains unavailable when its API is missing.
+
 `camera_set` and `capture_orbit` use **region** coordinates. `avatar_walk_to` uses **global** coordinates. Never interchange them. Camera manifests record requested poses. World-camera operations do not control the model uploader's preview camera.
 
 ## Evidence and failure handling
@@ -55,8 +61,8 @@ Record source hashes, requested operations, readback, viewer/build, selected opt
 
 Timeouts/cancellation can leave an already sent action in progress. Reinspect before retrying writes. The event buffer is bounded; a dropped flag means evidence is incomplete. Native file selection verifies a recognized viewer-owned dialog and filename readback but reports `import_verified:false` until the caller checks importer state.
 
-A valid PNG and correct dimensions do not prove useful visual evidence. A live consumer reported a completely black capture while structured UI remained responsive. Inspect the returned image; a blank frame is an unresolved capture failure, not evidence of an empty scene. Do not focus, restore or restart a viewer controlled by another task to repair a capture.
+A valid PNG and correct dimensions do not prove useful visual evidence. `snapshot` and orbit frames include `quality`: `blank_detected`, `status`, `reasons`, channel extrema and `visual_content_verified:false`. Black/nearly black, uniform/nearly uniform and fully transparent images are flagged. This is a heuristic, not a scene-recognition or stale-frame detector. Nonblank images still require visual review. A blank frame is an unresolved capture failure, not evidence of an empty scene. Do not focus, restore or restart a viewer controlled by another task to repair a capture.
 
-For importer tab/button controls, a consumer found `LLFloaterReg.clickButton` could change the active tab even when `ui_click` reported handled input without a visible change. Inspect the exact discovered operation and read back the target panel's visibility. `ui_find` currently matches the full path, caps a page at 200 and has no offset; narrow `under` or inspect immediate children of a scoped `LLWindow.getPaths` result in the caller. These are viewer-control limitations tracked in the compatibility audit, not guarantees that registry clicks work for every control.
+For importer tabs, use the registered-button option and inspect the target panel's visibility. These improvements address observed consumer struggles; they are not guarantees that every control works on every viewer build.
 
 For a bug report, provide exact scrubbed arguments, expected/observed result, an original synthetic fixture and the smallest relevant control/readback. Do not commit a connected session's raw captures, logs or runtime files.

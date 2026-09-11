@@ -71,6 +71,24 @@ def inspect_asset(filename: str):
     return result
 
 
+def capture_quality(image):
+    """Flag unusable flat frames without claiming that other frames show the subject."""
+    rgb = image.convert("RGB")
+    extrema = rgb.getextrema()
+    reasons = []
+    if max(high for low, high in extrema) <= 2:
+        reasons.append("black_or_nearly_black")
+    if max(high - low for low, high in extrema) <= 2:
+        reasons.append("uniform_or_nearly_uniform")
+    if "A" in image.getbands() and image.getchannel("A").getextrema()[1] == 0:
+        reasons.append("fully_transparent")
+    return {"status": "blank_or_nearly_blank" if reasons else "nonblank",
+            "blank_detected": bool(reasons), "reasons": reasons,
+            "channel_extrema_rgb_0_255": [list(pair) for pair in extrema],
+            "visual_content_verified": False,
+            "note": "A flagged frame is not useful scene evidence. Nonblank frames still require visual review; this does not detect all rendering failures."}
+
+
 def compare_images(reference: str, observed: str, output: Path):
     with Image.open(reference) as ref, Image.open(observed) as obs:
         a, b = ref.convert("RGB"), obs.convert("RGB")
