@@ -57,11 +57,15 @@ With `include_info:true`, one uninspectable item does not discard the page. Its 
 
 **Selected versus committed:** in the tested model importer, a targeted `Home` on a source combo changes the label to `Load from file`, but its Browse button stays hidden until a targeted `Return` on that same combo commits the choice. Use `observe_path` on the dependent Browse control for the commit call and verify both visible/enabled state before clicking it. Do not infer committed source mode from the selected label alone. For a preview LOD combo, likewise inspect the selected value and the rendered geometry after committing. These are separate observations, and a timeout must not trigger a blind repeat.
 
+**Checkboxes:** a mouse `ui_click` on the tested uploader's `show_physics/CheckboxCtrl Button` returned handled input without changing the parent value. A single `ui_press_key` with `keysym:"Space"`, the full visible/enabled child button `path`, and `observe_path` set to its parent checkbox changed the value and removed the overlay in a fresh capture. Use fresh readback to decide whether a toggle is needed, then verify the new boolean value. Return is not this checkbox's commit key. Repeated `CheckboxCtrl Button` names also make a floater-wide callback ambiguous; do not bypass that guard or blindly toggle twice. This is a tested procedure for this viewer/control, not universal checkbox support.
+
 `camera_set` and `capture_orbit` use **region** coordinates. `avatar_walk_to` uses **global** coordinates. Never interchange them. Camera manifests record requested poses. World-camera operations do not control the model uploader's preview camera.
 
 `mesh_preview_camera` targets the uploader's separate preview rectangle. Start with `{"mode":"zoom","vertical":0.2}` and inspect a new snapshot. Positive vertical zooms in; negative zooms out. `pan` and `orbit` accept horizontal/vertical fractions of the current rectangle, bounded to ±0.45 per call. Zoom requires horizontal zero. The helper checks the visible/enabled rectangle, uses only path-targeted drag events, rechecks geometry and attempts mouse-up in cleanup. Human input and UI changes can still interfere. There is no exact preview camera getter or restoration promise. The call reports requested UI-pixel positions and input replies, not a measured camera pose or verified composition.
 
 Importing an LOD file can change `preview_lod_combo`. After the final file import, explicitly select and commit the desired preview LOD, read it back and only then label/capture the frame. Caller-provided screenshot labels are not observed subject/LOD identity.
+
+Changing even the preview LOD was observed to invalidate a displayed importer quote. Re-read fee text and Calculate/Upload visibility after preview changes; do not assume a visual-only intention preserves a quote. Request Calculate once when needed, wait for settled readback and keep `displayed_only` / `freshness_verified:false` semantics. A displayed zero is not authority to upload.
 
 ## Evidence and failure handling
 

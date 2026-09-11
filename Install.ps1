@@ -23,4 +23,4 @@ Write-Output 'Start-FirestormMCP.cmd starts the viewer with LEAP when you are re
 Write-Output 'Check-FirestormMCP.cmd checks the connection without launching the viewer.'
 Write-Output 'MCP server command:'
 Write-Output $venvPython
-Write-Output 'Arguments: -m firestorm_mcp.server'
+Write-Output 'Arguments: -m firestorm_mcp.server --tool-profile compact'

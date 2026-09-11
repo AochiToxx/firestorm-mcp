@@ -1,10 +1,10 @@
 # Changelog
 
-## 0.3.0a1 — compatibility development (unreleased)
+## 0.3.0a1 — private compatibility baseline (11 September 2026)
 
 - Migrate to official MCP Python SDK v2 while retaining legacy-client protocol support.
 - Initialize/discover without contacting the viewer; discover live APIs explicitly through `capabilities_refresh`.
-- Add `--tool-profile compact` to keep discovery at 42 workflow tools while retaining generic API access.
+- Add `--tool-profile compact` to keep discovery at 43 workflow tools while retaining generic API access.
 - Advertise and deliver catalog changes to legacy clients and modern subscription listeners, with deterministic ordering and private zero-TTL cache hints.
 - Return structured results alongside existing JSON text/images; reject invalid/extra arguments before dispatch and report unknown tools as protocol errors.
 - Add wire-level checks across five protocol revisions, host-specific setup guidance and a cited compatibility audit.
@@ -17,7 +17,7 @@
 - Drain bounded rejected HTTP bodies to avoid Windows connection resets; extend Windows CI to Python 3.14 and add dependency advisory checks.
 - Preserve UI search pages when individual returned paths cannot be inspected.
 - Add `mesh_preview_camera` for bounded path-targeted uploader zoom/pan/orbit; the current workflow catalog has 43 tools.
-- Keep the existing release downloads and active consumer installations unchanged pending coordinated live validation.
+- Document the live importer workflow's separate selection/commit steps and the need to read the preview LOD again after file imports.
 
 ## 0.2.0a1 — private collaboration alpha
 
