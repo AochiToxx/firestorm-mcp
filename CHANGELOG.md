@@ -1,5 +1,12 @@
 # Changelog
 
+## Mesh-preview skill 0.1.0 — optional companion (12 September 2026)
+
+- Add a portable Agent Skills entrypoint and importer reference for the existing MCP 0.3.0a1.
+- Package scoped discovery, source commits, checkbox keys, LOD captures, quote readback and cleanup as reusable instructions.
+- Provide a separate skill ZIP with MIT licence/checksum and include the sources in future source distributions.
+- Keep runtime APIs, the existing MCP release assets and active viewer installations unchanged.
+
 ## 0.3.0a1 — private compatibility baseline (11 September 2026)
 
 - Migrate to official MCP Python SDK v2 while retaining legacy-client protocol support.
