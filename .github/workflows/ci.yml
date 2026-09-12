@@ -38,6 +38,7 @@ jobs:
           python -m build
           python -m twine check dist/*.whl dist/*.tar.gz
           python scripts/build_release.py
+          python scripts/build_skill.py
       - name: Test installed wheel in a fresh environment
         if: matrix.python == '3.12'
         shell: pwsh

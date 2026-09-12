@@ -2,7 +2,7 @@
 
 **Give AI agents structured tools for the Firestorm viewer: inspect 3D exports, drive mesh previews, control the camera and collect verification evidence in Second Life.**
 
-[Downloads](#downloads) · [Install](#install-on-windows) · [Capabilities](#what-can-it-do-today) · [Agent quick start](#for-ai-agents) · [Tool reference](docs/TOOLS.md) · [Contribute](CONTRIBUTING.md) · [Known limits](#known-limits)
+[Downloads](#downloads) · [Install](#install-on-windows) · [Capabilities](#what-can-it-do-today) · [Agent skill](docs/SKILLS.md) · [Agent quick start](#for-ai-agents) · [Tool reference](docs/TOOLS.md) · [Contribute](CONTRIBUTING.md) · [Known limits](#known-limits)
 
 **Version:** `0.3.0a1` · Windows alpha · Python 3.11–3.14 tested · MIT licence
 
@@ -38,6 +38,8 @@ Startup exposes the 43 workflow tools immediately, even with a stalled viewer. C
 | [Release notes and all assets](https://github.com/AochiToxx/firestorm-mcp/releases/tag/v0.3.0a1) | Review this alpha's changes, checks and limitations. |
 
 Downloads are hosted on this project's GitHub Releases page. They require repository access while the project remains private. This alpha is not yet listed on PyPI or the public MCP Registry.
+
+**Optional companion:** [download the Firestorm mesh-preview skill 0.1.0](https://github.com/AochiToxx/firestorm-mcp/releases/download/skill-v0.1.0/firestorm-mesh-preview-0.1.0.zip). It gives agents the tested importer sequence, control workarounds and evidence rules. It works with the existing 0.3.0a1 MCP; no runtime upgrade is required. See [skill installation and limits](docs/SKILLS.md).
 
 ## Install on Windows
 
@@ -89,6 +91,8 @@ Those operations cover capabilities such as teleporting, touch/sit/stand request
 Dynamic names follow `viewer_<API>_<operation>` and take viewer fields inside `arguments`. For example, inspect an operation with `viewer_api_inspect` before using `viewer_call`. Exact schemas are in [tool-catalog.json](docs/tool-catalog.json); the historical viewer descriptors are in [viewer-api-reference.json](docs/viewer-api-reference.json). The running viewer is the authority when these differ.
 
 ## For AI agents
+
+Use the optional [firestorm-mesh-preview skill](skills/firestorm-mesh-preview/SKILL.md) for mesh-import and LOD/physics verification tasks. It loads a focused procedure instead of requiring every agent to reconstruct it from the full reference. The skill supplies instructions; the MCP supplies the actual tools. Host installation and activation are described in [the skill guide](docs/SKILLS.md).
 
 **Start here; do not infer success from a tool's name or a dispatched input.**
 
@@ -144,6 +148,8 @@ Raw user captures, account/object identifiers, credentials, machine paths and pr
 Use [Issues](https://github.com/AochiToxx/firestorm-mcp/issues) for actionable reports and [Discussions](https://github.com/AochiToxx/firestorm-mcp/discussions) for questions, ideas and examples. Read [CONTRIBUTING.md](CONTRIBUTING.md) and [AGENTS.md](AGENTS.md), then propose a focused pull request. Include exact tool arguments, expected/observed results, tests and whether a claim was simulated or observed in a real viewer. Keep consumer products, private assets and business rules outside the generic API.
 
 AI contributions should have a responsible human owner. Agents can propose and test improvements; maintainers review changes before they become a release. The repository starts private for review. These collaboration links require access until the owner chooses to make it public; invitations in this README do not grant repository access automatically.
+
+The community alpha can accept contributions while performance improvements and additional host/viewer testing continue. The documented limits are useful work for collaborators, rather than a requirement to implement every planned feature before inviting them. Workflow instructions can be improved independently of the MCP runtime through the optional skill.
 
 ## Development
 

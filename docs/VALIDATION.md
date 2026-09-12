@@ -1,5 +1,19 @@
 # Verification and limits
 
+## Optional skill companion checks
+
+On 12 September 2026, the `firestorm-mesh-preview` 0.1.0 companion passed the
+skill-format validator. Its fenced JSON examples were checked against the current
+MCP tool schemas without contacting a viewer. The suite passed **67 tests**,
+including three new packaging cases for an allowlisted, self-contained,
+deterministic archive and rejection of profile paths/credential-like content.
+The MCP runtime implementation and its 0.3.0a1 release assets were unchanged.
+Two offline consumer reviews identified and improved ownership-before-focus,
+hidden-preview ambiguity, registered action callbacks and restoration of the
+user's initial state versus their requested outcome. These reviews are separate
+from the inherited live procedures below; the skill has no new end-to-end live
+run, host activation matrix or speed benchmark.
+
 ## Current package checks
 
 Version `0.3.0a1`, checked in isolation on 11 September 2026 with Windows/Python 3.12 and MCP SDK 2.2.0: **64 tests passed**. The Windows CI matrix also passed on Python **3.11, 3.12, 3.13 and 3.14**. Wire-level tests exercise five protocol revisions, including direct `server/discover` on `2026-07-28`, legacy handshakes, clean UTF-8 stdio, structured and PNG results, strict input rejection, catalog-change notifications in both eras, compact discovery and cancellation of a queued viewer call. Consumer regressions cover complete UI pagination, per-item inspection errors, basename/depth matching, required/hidden keyboard targets, before/after selection readback, ambiguous registry-button rejection, flat-frame detection, preview-camera bounds/targeting/cleanup and redirect refusal. These tests use temporary files and a synthetic loopback bridge; none contacts an actual viewer.

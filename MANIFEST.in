@@ -3,6 +3,7 @@ include Install.cmd Install.ps1 Start-FirestormMCP.cmd Start-FirestormMCP.ps1 Ch
 include requirements-lock.txt .gitignore .gitattributes
 recursive-include docs *.md *.json
 recursive-include scripts *.py
+recursive-include skills *.md
 recursive-include tests *.py *.dae
 recursive-include .github *.yml *.md
 global-exclude *.py[cod]
