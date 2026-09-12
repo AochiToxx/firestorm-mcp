@@ -28,4 +28,4 @@ Format, package and offline instruction checks are separate from live testing. H
 
 Edit [the source folder](../skills/firestorm-mesh-preview) and describe the request, failure and correction in a pull request. Keep API fixes in the runtime and follow [CONTRIBUTING.md](../CONTRIBUTING.md).
 
-Build a standalone ZIP with `python scripts/build_skill.py --output-dir dist`. The package includes both skill documents and the MIT licence. The runtime wheel does not install personal skill files.
+Build a standalone ZIP with `python3 scripts/build_skill.py --output-dir dist` (`python` on Windows). It includes both skill documents and the MIT licence. The runtime wheel does not install personal skill files.

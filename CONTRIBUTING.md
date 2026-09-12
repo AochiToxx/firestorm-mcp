@@ -18,7 +18,7 @@ Prefer an original synthetic fixture. Keep credentials, private paths, account/o
 1. Fork or clone the project and create a focused branch.
 2. Run `python install.py --development` on Windows or `python3 install.py --development` on Linux/macOS.
 3. Run `.venv/Scripts/python.exe -m pytest -q` on Windows or `.venv/bin/python -m pytest -q` on Linux/macOS.
-4. Update affected guides and run `python scripts/generate_catalog.py` when tool descriptions or schemas change.
+4. Update affected guides. For tool changes, regenerate the catalog with `.venv/Scripts/python.exe scripts/generate_catalog.py` on Windows or `.venv/bin/python scripts/generate_catalog.py` on Linux/macOS.
 5. Open a pull request describing the problem, result, checks and remaining limits.
 
 Automated tests use temporary state and simulated transports. They must not launch a viewer, connect to a user's runtime or change an active installation. Package changes also need a fresh wheel/source installation check.

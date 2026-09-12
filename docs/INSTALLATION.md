@@ -4,7 +4,7 @@ Download the [0.3.0a3 setup ZIP](https://github.com/AochiToxx/firestorm-mcp/rele
 
 ## Quick setup
 
-Run these from the extracted folder:
+Run these from the extracted folder. On Windows, double-click `.cmd` files or prefix local scripts with `.\` in PowerShell:
 
 | Action | Windows | Linux / macOS |
 | --- | --- | --- |
@@ -16,7 +16,7 @@ Run these from the extracted folder:
 
 The installer creates `.venv`, updates pip there and prints configuration. It does not edit agent settings or start Firestorm. Windows keeps the installer output open until you press a key.
 
-For unattended setup, use `python install.py` or `python3 install.py`. Add `--development` for editable source and test dependencies. Select another interpreter with `Install.ps1 -Python 'C:/path/to/python.exe'` or `PYTHON=/path/to/python3 sh Install.sh`.
+For unattended setup, use `python install.py` or `python3 install.py`. Add `--development` for editable source and test dependencies. Select another interpreter with `.\Install.ps1 -Python 'C:/path/to/python.exe'` or `PYTHON=/path/to/python3 sh Install.sh`.
 
 ## Agent configuration
 
