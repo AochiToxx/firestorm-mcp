@@ -1,5 +1,15 @@
 # Verification and limits
 
+## Portable setup alpha 0.3.0a2
+
+On 12 September 2026 the Windows isolated suite passed **82 tests**. New cases cover Windows/Linux/macOS layout selection, dry-run without side effects, busy-viewer refusal, preservation of foreign launch locks, resource-aware launch plans, ambiguous discovery, unsafe bundle paths, platform state defaults, local configuration, offline diagnostic privacy and unsupported native calls failing before lease acquisition. All viewer launch tests replace process creation with a synthetic recorder.
+
+The redirect-refusal test server now consumes the request body before replying. Without this, Windows could reset the test socket before the redirect response was read; the production redirect policy is unchanged.
+
+CI now defines eight jobs: Windows Python 3.11–3.14, and Python 3.12 on Ubuntu x64/ARM64 plus macOS Intel/ARM64. Each Python 3.12 job builds packages, tests the source ZIP installer, checks a freshly installed wheel and runs the official Inspector and dependency audit. The release's linked CI run records execution outcomes; the workflow definition alone is not a passing result.
+
+No live viewer was launched, contacted or migrated for this update. The existing consumer stays on its separately installed 0.3.0a1 runtime. Linux/macOS live control, native file-picker adapters, actual Pi hardware, remote transport and host-application UI activation are not verified by these package/protocol checks.
+
 ## Optional skill companion checks
 
 On 12 September 2026, the `firestorm-mesh-preview` 0.1.0 companion passed the

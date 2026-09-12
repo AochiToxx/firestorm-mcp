@@ -1,3 +1,3 @@
 @echo off
-powershell.exe -NoProfile -File "%~dp0Install.ps1" %*
+python "%~dp0install.py" %*
 if errorlevel 1 pause

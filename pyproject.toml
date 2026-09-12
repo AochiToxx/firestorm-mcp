@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "firestorm-mcp"
-version = "0.3.0a1"
+version = "0.3.0a2"
 description = "Local MCP access to Firestorm's live LEAP APIs and asset inspection workflows"
 requires-python = ">=3.11"
 readme = "README.md"
@@ -12,7 +12,7 @@ license = "MIT"
 license-files = ["LICENSE", "THIRD_PARTY.md"]
 authors = [{name = "Firestorm MCP contributors"}]
 keywords = ["mcp", "firestorm", "second-life", "blender", "virtual-world", "ai-agent", "leap"]
-classifiers = ["Development Status :: 3 - Alpha", "Operating System :: Microsoft :: Windows", "Programming Language :: Python :: 3"]
+classifiers = ["Development Status :: 3 - Alpha", "Operating System :: Microsoft :: Windows", "Operating System :: POSIX :: Linux", "Operating System :: MacOS :: MacOS X", "Programming Language :: Python :: 3"]
 dependencies = ["mcp>=2.2,<3", "jsonschema>=4.20,<5", "llsd>=1.2.4,<2", "pillow>=11", "psutil>=6,<8", "pywin32>=311; sys_platform == 'win32'"]
 
 [project.urls]
@@ -29,6 +29,8 @@ firestorm-mcp = "firestorm_mcp.server:main"
 firestorm-leap = "firestorm_mcp.bridge:main"
 firestorm-mcp-launch = "firestorm_mcp.launcher:main"
 firestorm-mcp-check = "firestorm_mcp.probe:main"
+firestorm-mcp-config = "firestorm_mcp.configure:main"
+firestorm-mcp-doctor = "firestorm_mcp.doctor:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

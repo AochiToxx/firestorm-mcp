@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0a2 — portable setup alpha (12 September 2026)
+
+- Use one Python installer from Windows/POSIX wrappers, with a local virtual environment and generated absolute-path stdio configuration.
+- Add offline setup diagnostics, conventional viewer discovery and explicit selection for ambiguous/nonstandard installations.
+- Add experimental Linux distribution-wrapper and macOS app-bundle launch layouts; derive matching UI resource paths and platform-native state directories.
+- Report native picker availability in connection status and reject unsupported file-selection calls before acquiring a viewer lease. Native picker automation remains Windows-only.
+- Create POSIX session-token files with owner-only permissions from the first write.
+- Expand CI to Linux x64/ARM64 and macOS Intel/ARM64, exercising source ZIP installation and a fresh wheel without a live viewer.
+- Keep existing consumer installations untouched. New Linux/macOS/Pi live workflows remain unverified; the optional skill retains its Windows 0.3.0a1 live baseline.
+
 ## Mesh-preview skill 0.1.0 — optional companion (12 September 2026)
 
 - Add a portable Agent Skills entrypoint and importer reference for the existing MCP 0.3.0a1.

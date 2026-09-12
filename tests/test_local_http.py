@@ -49,6 +49,7 @@ def test_client_never_follows_redirects(tmp_path, status):
         def log_message(self, *args):
             pass
         def do_POST(self):
+            self.rfile.read(int(self.headers.get("Content-Length", "0")))
             self.send_response(status)
             self.send_header("Location", f"http://127.0.0.1:{self.server.server_port}/other")
             self.end_headers()

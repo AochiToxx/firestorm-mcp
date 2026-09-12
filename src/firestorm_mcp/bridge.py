@@ -18,6 +18,7 @@ import uuid
 import xml.etree.ElementTree as ET
 
 from .protocol import FrameDecodeError, decode_typed, encode_frame, json_default, read_frame
+from .paths import viewer_directory
 
 LOG = logging.getLogger(__name__)
 
@@ -38,7 +39,7 @@ class LeapBridge:
         self.events = collections.deque(maxlen=1000)
         self.apis = {}
         self.started = time.time()
-        self.viewer_dir = Path(r"C:\Program Files\Firestorm-Releasex64")
+        self.viewer_dir = viewer_directory()
         self.owner = None
         self.owner_label = None
         self.lease_until = 0
@@ -283,7 +284,7 @@ def make_handler(bridge, token):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--runtime", required=True, type=Path)
-    parser.add_argument("--viewer-dir", type=Path, default=Path(r"C:\Program Files\Firestorm-Releasex64"))
+    parser.add_argument("--viewer-dir", type=Path, default=viewer_directory())
     parser.add_argument("--debug-protocol", action="store_true")
     args = parser.parse_args()
     logging.basicConfig(stream=sys.stderr, level=logging.INFO)
@@ -293,7 +294,7 @@ def main():
         msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
     bridge = LeapBridge(sys.stdin.buffer, sys.stdout.buffer)
     bridge.viewer_dir = args.viewer_dir
-    args.runtime.mkdir(parents=True, exist_ok=True)
+    args.runtime.mkdir(mode=0o700, parents=True, exist_ok=True)
     if args.debug_protocol:
         bridge.debug_protocol_dir = args.runtime
     token = secrets.token_urlsafe(32)
@@ -303,7 +304,11 @@ def main():
                   "pid": os.getpid(), "session_id": uuid.uuid4().hex, "started": time.time()}
     connection_file = args.runtime / "connection.json"
     temporary = args.runtime / f"connection-{os.getpid()}.tmp"
-    temporary.write_text(json.dumps(connection), encoding="utf-8")
+    # Restrict session credentials from the first byte, even with a permissive
+    # POSIX umask. Windows continues to use its user-directory ACLs.
+    descriptor = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+        json.dump(connection, handle)
     temporary.replace(connection_file)
     threading.Thread(target=server.serve_forever, daemon=True).start()
     try:

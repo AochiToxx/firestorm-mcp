@@ -1,5 +1,6 @@
 include README.md LICENSE THIRD_PARTY.md CONTRIBUTING.md AGENTS.md SECURITY.md CHANGELOG.md
 include Install.cmd Install.ps1 Start-FirestormMCP.cmd Start-FirestormMCP.ps1 Check-FirestormMCP.cmd
+include install.py Install.sh Start-FirestormMCP.sh Check-FirestormMCP.sh
 include requirements-lock.txt .gitignore .gitattributes
 recursive-include docs *.md *.json
 recursive-include scripts *.py

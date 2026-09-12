@@ -613,7 +613,7 @@
   },
   {
     "name": "native_file_choose",
-    "description": "Select an existing file in a freshly discovered Firestorm Open dialog. Verifies window ownership and filename readback. Import success must be checked in viewer state. Know which import/upload action opened the picker first.",
+    "description": "Windows only: select an existing file in a freshly discovered Firestorm Open dialog. Verifies ownership and filename readback. Import success needs viewer readback. Know which action opened the picker first. Other systems require manual file selection.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
