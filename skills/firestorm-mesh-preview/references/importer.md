@@ -1,11 +1,9 @@
 # Importer procedure for Firestorm MCP 0.3.0a1
 
-Tool names below omit host-specific prefixes. Inspect current tool schemas before
-calling them. Paths come from the running viewer; examples using
-`/path/from/discovery` describe argument shape and are not executable UI targets.
-Version differences or an unavailable operation require a reported limitation,
-not an unbound keyboard fallback. These procedures inherit live viewer evidence;
-the skill itself has not yet been benchmarked in a new end-to-end agent run.
+Inspect current schemas and add your host's tool prefix where needed. Replace
+example paths with paths discovered in the viewer. Report unavailable operations;
+do not use unbound keyboard input. These procedures have live viewer evidence,
+but the skill has no separate end-to-end performance benchmark.
 
 ## Establish and load a preview
 
@@ -17,29 +15,24 @@ and inspect the existing preview read-only, for example with `viewer_call`:
 {"api":"LLFloaterReg","operation":"instanceVisible","arguments":{"name":"upload_model"},"expect_reply":true}
 ```
 
-This reports visibility, not existence or ownership. A false result alone does
-not authorize a new open/load: use supported read-only panel-tree inspection and
-`native_file_dialogs` to distinguish an absent preview from a retained hidden
-preview or a pending importer picker. If presence or reuse authority cannot be
-established from those observations and the task context, release and clarify.
+False means hidden or absent; it does not establish ownership. Inspect the panel
+tree read-only and check for a pending picker. Use `native_file_dialogs` only when
+`connection_status.local_platform.native_file_dialogs` is true; otherwise arrange
+manual observation. If presence or reuse permission remains unknown, release and
+clarify before opening, focusing, replacing or cancelling.
 
-If a preview exists, use read-only scoped discovery/inspection to identify its
-contents. Do not use `floater_open` for this check: it focuses the panel. Establish
-authority to reuse the preview from the task/session context. If that authority
-is unknown, release the lease and clarify before any open/focus/replace/cancel.
-Record whether the workflow creates a new preview or reuses an authorized one.
-Record initial preview LOD/overlay state and the user's desired final state.
-Comparison-only work should retain matching loaded files and skip unrelated
-imports, physics Analyze and quote calculation.
+Inspect an existing panel's contents without `floater_open`, which focuses it.
+Record whether the preview is new or authorized for reuse, its initial LOD/overlay
+and the requested final state. Comparison-only work can reuse matching files and
+skip unrelated imports, Analyze and quote calculation.
 
-For a new requested model preview, call `mesh_upload_open {}`. Discover a fresh
-Firestorm-owned picker using `native_file_dialogs {}`, then select the exact file
-with `native_file_choose {"dialog_id":123,"filename":"C:/exports/example-high.dae"}`
-where the ID and path are replaced with the actual discovered ID and supplied
-absolute path. Other upload pickers may advance a transaction when a file is
-selected; do not substitute a texture/sound/animation picker. After selection,
-read settled importer state rather than treating filename entry as a completed
-import. An initially empty picker list may mean the picker is still opening.
+For a new model preview, call `mesh_upload_open {}`. On supported Windows layouts,
+discover its fresh Firestorm-owned picker with `native_file_dialogs {}` and use
+`native_file_choose {"dialog_id":123,"filename":"C:/exports/example-high.dae"}`
+with the actual ID and supplied absolute path. Elsewhere, arrange manual selection.
+Check the workflow: texture/sound/animation pickers may advance a transaction.
+An empty list can mean the picker is still opening. After selection, verify settled
+importer state; entering a filename does not prove import completion.
 
 For an owned/authorized preview, use an already-discovered path, or the path from
 `floater_open` with registered name `upload_model` when focusing it is appropriate.
@@ -65,11 +58,9 @@ observed, stop that selection sequence; do not send Return blindly. Example shap
 {"keysym":"Return","path":"/discovered/source-combo","observe_path":"/discovered/browse-button"}
 ```
 
-Invoke that verified Browse button using the registered-button recipe below,
-discover its fresh native picker, select the
-corresponding file, and check the settled source/path/count readback. Do not repeat
-an import whose completion is merely pending. Use a bounded deadline appropriate
-to the task, report pending state, and preserve an unresolved operation on timeout.
+Invoke the verified Browse button using the recipe below, select the corresponding
+file and check settled source/path/count readback. Allow a bounded deadline for a
+pending import; on timeout, report unresolved state before deciding whether to retry.
 
 ## Tabs, physics and checkboxes
 
@@ -142,12 +133,10 @@ checks, prefer `ui_inspect`, `ui_get_value`, or the existing input tool's
 `observe_path` result for the relevant control. Do not cache changing values as
 truth; revalidate reused paths after reopening a panel or reconnecting the viewer.
 
-Calculate (`calculate_btn`) and Upload (`ok_btn`) are different actions. Request a
-quote only when it belongs to the user's task. Click the verified Calculate
-control once with the registered-button recipe and observe pending versus settled
-state within a deadline. Scale
-changes and even preview LOD commits were observed to invalidate fees. Re-read
-quote state after those operations rather than carrying an earlier number forward.
+Calculate (`calculate_btn`) and Upload (`ok_btn`) are separate actions. When the
+task needs a quote, click the verified Calculate control once and observe pending
+versus settled state within a deadline. Scale changes and preview LOD commits can
+invalidate fees; re-read the quote afterward.
 
 Report numeric fees as `displayed_only`, with `freshness_verified:false` and file
 content binding unverified. Preserve unknown fields as unknown; hidden warning
@@ -156,14 +145,13 @@ which bytes a simulator would receive. No quote or preview establishes an upload
 
 ## Cleanup and useful feedback
 
-Restore temporary settings only where the earlier value and supported restoration
-are known, preserving the user's intended outcome. Close a preview created for
-the check unless asked to keep it; leave an authorized reused preview open unless
-closing it was agreed. When closing, discover its `cancel_btn` by
-basename, verify it, invoke the registered callback and check
-`LLFloaterReg.instanceVisible` for `upload_model` is false. Check native pickers,
-release this client's lease and finish the persistent client normally. If an
-operation/dialog remains unresolved, report it instead of discarding its owner.
+Restore known temporary settings where supported, preserving requested outcomes.
+Close a preview created for the check unless asked to keep it; leave a reused one
+open unless closing was authorized. To close, discover and verify `cancel_btn`,
+invoke its registered callback and check that `upload_model` is hidden. Check for
+unresolved pickers using the platform's supported method, release this client's
+lease and exit normally. Report unresolved operations instead of discarding their
+owner.
 
 A useful contribution identifies the tool and scrubbed arguments, expected and
 observed state, viewer/MCP versions, the smallest synthetic reproduction and

@@ -8,10 +8,10 @@ Generated from the current workflow definitions and historical Firestorm 7.2.4.8
 
 | Tool | Description |
 | --- | --- |
-| `control_acquire` | Acquire exclusive bridge control for a multi-step workflow. Other clients can still read connection status/events. Renew before expiry and release in finally. |
+| `control_acquire` | Acquire a workflow control lease. Other clients can still read status/events. Renew before expiry and release in finally; human input remains possible. |
 | `control_release` | Release this client's exclusive control lease. |
 | `native_file_dialogs` | List recognized Windows Open-file dialogs owned by this Firestorm installation. English common dialogs only; unsupported layouts require manual selection. |
-| `native_file_choose` | Windows only: select an existing file in a freshly discovered Firestorm Open dialog. Verifies ownership and filename readback. Import success needs viewer readback. Know which action opened the picker first. Other systems require manual file selection. |
+| `native_file_choose` | Select a file in a freshly discovered Windows Firestorm Open dialog. Checks ownership and filename; verify import afterward. Confirm which workflow opened it. Other platforms need manual selection. |
 | `connection_status` | Check whether the local Firestorm LEAP helper is connected. Does not log in or change the viewer. |
 | `capabilities_refresh` | Discover all APIs and operations exposed by this running viewer; refresh dynamic MCP tool discovery. |
 | `viewer_api_inspect` | Read the live description and required arguments for an API or operation. Discover before calling unfamiliar operations. |
@@ -19,13 +19,13 @@ Generated from the current workflow definitions and historical Firestorm 7.2.4.8
 | `events_subscribe` | Subscribe to a named viewer event stream, such as StartupState or LLAutopilot. Events are bounded and remain local until read. |
 | `events_unsubscribe` | Stop subscribing to a viewer event stream. |
 | `events_read` | Read subscribed viewer events after a cursor. The dropped flag identifies buffer overflow; do not infer missing events. |
-| `ui_find` | Find UI paths in an explicit narrow subtree. Search path or basename using contains/exact/prefix/glob matching (case-insensitive). max_depth=1 selects the root and immediate children. Pages have explicit next_offset/truncated; the viewer still enumerates the entire requested subtree, so keep under narrow. |
+| `ui_find` | Search paths or basenames, case-insensitively, within a narrow under path. max_depth=1 includes root and children. Follow next_offset for more results; each page still enumerates the requested subtree. |
 | `ui_get_value` | Read the value of a specific discovered UI control. Use targeted paths to avoid unrelated chat or private fields. |
-| `ui_click` | Click a visible, enabled control by path. Supply floater (registered name) to invoke a unique button's callback instead of coordinate input. Optional observe_path returns before/after UI state. Handling/callback completion is not effect verification; inspect the readback. |
+| `ui_click` | Click a visible, enabled control. A registered floater invokes a unique button callback; otherwise uses coordinates. observe_path returns before/after state. Verify the effect from readback. |
 | `ui_set_text` | Replace text in a discovered edit control using viewer input, then read back its value. Does not press Enter. |
 | `ui_select` | Select a visible enabled combobox item by actual value, when supported by the viewer, and compare selected-value readback. Older viewers require path-targeted ui_press_key with readback. |
-| `ui_inspect` | Inspect a known UI path's geometry and enabled/visible state. Use floater_open and ui_find to discover panel controls. |
-| `ui_press_key` | Press/release a key targeted to a visible enabled path and return UI readback. Path is required: the viewer sets keyboard focus to it during dispatch. Modifiers are CTL/ALT/SHIFT/MAC_CONTROL. Enter can commit a form. Human input and viewer shortcuts can still interfere; verify the returned state. |
+| `ui_inspect` | Read a known UI path's geometry and enabled/visible state without opening or focusing it. Discover children with scoped ui_find. |
+| `ui_press_key` | Focus a required visible, enabled path, press/release a key and read back state. Modifiers: CTL/ALT/SHIFT/MAC_CONTROL. Enter can commit forms. Human input and shortcuts can interfere; verify the result. |
 | `ui_list_menus` | List viewer menu entries from this installation's XUI, filter by name/label/function. These describe menus, not guaranteed enabled actions. |
 | `ui_invoke_menu` | Invoke an actual menu entry from installed XUI by exact name; unknown callback names are never dispatched. This may open a native file picker. |
 | `floater_list` | List registered viewer floaters and their XUI files. |
@@ -47,8 +47,8 @@ Generated from the current workflow definitions and historical Firestorm 7.2.4.8
 | `local_mesh_open` | Open Firestorm's Local Mesh panel. Its local replacements are visible only in this viewer and do not prove server upload. |
 | `local_mesh_auto_reload` | Set local mesh automatic reload so Blender exports can refresh in the viewer. Returns the previous settings for restoration. |
 | `mesh_upload_open` | Open the standard mesh upload preview workflow. Does not submit an upload or authorize an upload fee. |
-| `mesh_preview_camera` | Adjust only the open mesh uploader's preview camera using a bounded path-targeted drag. horizontal/vertical are fractions of its freshly inspected preview rectangle, each -0.45 to 0.45. Positive vertical zooms in; zoom requires horizontal=0. Pan/orbit use the viewer's modifiers. Does not move the world camera. Capture afterward to verify composition; no exact pose getter/restoration is available. |
-| `mesh_upload_status` | Read mesh-import preview LOD sources/files/counts, physics, dimensions, warnings, displayed weights and fee with control visibility. Does not calculate or submit an upload. Quote freshness and file-content bindings remain unverified. |
+| `mesh_preview_camera` | Drag the mesh uploader's preview camera; world camera stays unchanged. Fractions are bounded to -0.45..0.45 of the inspected rectangle. Positive vertical zooms in; zoom needs horizontal=0. Capture to verify. No exact pose readback or restoration. |
+| `mesh_upload_status` | Read importer LOD files/counts, physics, dimensions, warnings, weights, displayed fee and visibility. Does not calculate or upload. Readback is non-atomic; quote freshness and file bytes remain unverified. |
 | `local_mesh_status` | Read Local Mesh's selected item/object and displayed import log. This is local preview evidence, not a simulator upload. |
 | `capture_manifest_read` | Read a saved capture manifest created by this server. |
 
