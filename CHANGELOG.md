@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0a3 — public alpha (12 September 2026)
+
+- Shorten setup, capability, agent and contributor guides; add a brief AI-authorship note.
+- Clarify tool descriptions without changing arguments or behavior.
+- Publish the mesh-preview skill 0.1.1 with shorter instructions and explicit platform handling.
+- Retain the existing platform and live-test limits. No consumer runtime is upgraded automatically.
+
+
 ## 0.3.0a2 — portable setup alpha (12 September 2026)
 
 - Use one Python installer from Windows/POSIX wrappers, with a local virtual environment and generated absolute-path stdio configuration.

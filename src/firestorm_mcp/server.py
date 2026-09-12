@@ -208,7 +208,7 @@ class Tools:
         reg = self.register
         c = self.client
 
-        @reg("Acquire exclusive bridge control for a multi-step workflow. Other clients can still read connection status/events. Renew before expiry and release in finally.")
+        @reg("Acquire a workflow control lease. Other clients can still read status/events. Renew before expiry and release in finally; human input remains possible.")
         def control_acquire(label: str = "Blender asset verification", seconds: float = 300):
             return c.rpc("acquire", label=label, seconds=seconds)
 
@@ -221,7 +221,7 @@ class Tools:
             from .native import dialogs
             return dialogs(self.viewer_dir)
 
-        @reg("Windows only: select an existing file in a freshly discovered Firestorm Open dialog. Verifies ownership and filename readback. Import success needs viewer readback. Know which action opened the picker first. Other systems require manual file selection.")
+        @reg("Select a file in a freshly discovered Windows Firestorm Open dialog. Checks ownership and filename; verify import afterward. Confirm which workflow opened it. Other platforms need manual selection.")
         def native_file_choose(dialog_id: int, filename: str):
             from .native import choose_file
             if not platform_support()["native_file_dialogs"]:
@@ -269,7 +269,7 @@ class Tools:
         def events_read(after: int = 0):
             return c.rpc("events", after=after)
 
-        @reg("Find UI paths in an explicit narrow subtree. Search path or basename using contains/exact/prefix/glob matching (case-insensitive). max_depth=1 selects the root and immediate children. Pages have explicit next_offset/truncated; the viewer still enumerates the entire requested subtree, so keep under narrow.", True)
+        @reg("Search paths or basenames, case-insensitively, within a narrow under path. max_depth=1 includes root and children. Follow next_offset for more results; each page still enumerates the requested subtree.", True)
         def ui_find(query: str, under: str = "", limit: int = 50, include_info: bool = False,
                     offset: int = 0, search_in: typing.Literal["path", "name"] = "path",
                     match: typing.Literal["contains", "exact", "prefix", "glob"] = "contains",
@@ -315,7 +315,7 @@ class Tools:
                 raise ValueError("This path does not expose a UI control value; verify it with ui_inspect/ui_find")
             return result
 
-        @reg("Click a visible, enabled control by path. Supply floater (registered name) to invoke a unique button's callback instead of coordinate input. Optional observe_path returns before/after UI state. Handling/callback completion is not effect verification; inspect the readback.")
+        @reg("Click a visible, enabled control. A registered floater invokes a unique button callback; otherwise uses coordinates. observe_path returns before/after state. Verify the effect from readback.")
         def ui_click(path: str, button: str = "LEFT", floater: str | None = None, observe_path: str | None = None):
             info = c.call("LLWindow", "getInfo", {"path": path}, expect_reply=True)
             if not info.get("visible_chain") or not info.get("enabled_chain"):
@@ -391,11 +391,11 @@ class Tools:
                     "matches": after["value"] == value if after["value_available"] else None,
                     "verified_effect": False}
 
-        @reg("Inspect a known UI path's geometry and enabled/visible state. Use floater_open and ui_find to discover panel controls.", True)
+        @reg("Read a known UI path's geometry and enabled/visible state without opening or focusing it. Discover children with scoped ui_find.", True)
         def ui_inspect(path: str = "/main_view"):
             return c.call("LLWindow", "getInfo", {"path": path}, expect_reply=True)
 
-        @reg("Press/release a key targeted to a visible enabled path and return UI readback. Path is required: the viewer sets keyboard focus to it during dispatch. Modifiers are CTL/ALT/SHIFT/MAC_CONTROL. Enter can commit a form. Human input and viewer shortcuts can still interfere; verify the returned state.")
+        @reg("Focus a required visible, enabled path, press/release a key and read back state. Modifiers: CTL/ALT/SHIFT/MAC_CONTROL. Enter can commit forms. Human input and shortcuts can interfere; verify the result.")
         def ui_press_key(keysym: str, path: str, modifiers: list[typing.Literal["CTL", "ALT", "SHIFT", "MAC_CONTROL"]] = [],
                          observe_path: str | None = None):
             keysym = {"BACKSPACE": "Backsp", "DELETE": "Del", "RETURN": "Enter", "ESCAPE": "Esc",
@@ -552,7 +552,7 @@ class Tools:
         def mesh_upload_open():
             return ui_invoke_menu("Upload Model")
 
-        @reg("Adjust only the open mesh uploader's preview camera using a bounded path-targeted drag. horizontal/vertical are fractions of its freshly inspected preview rectangle, each -0.45 to 0.45. Positive vertical zooms in; zoom requires horizontal=0. Pan/orbit use the viewer's modifiers. Does not move the world camera. Capture afterward to verify composition; no exact pose getter/restoration is available.")
+        @reg("Drag the mesh uploader's preview camera; world camera stays unchanged. Fractions are bounded to -0.45..0.45 of the inspected rectangle. Positive vertical zooms in; zoom needs horizontal=0. Capture to verify. No exact pose readback or restoration.")
         def mesh_preview_camera(mode: typing.Literal["zoom", "pan", "orbit"] = "zoom",
                                 horizontal: float = 0, vertical: float = 0.2):
             if not all(math.isfinite(v) and abs(v) <= 0.45 for v in (horizontal, vertical)):
@@ -598,7 +598,7 @@ class Tools:
                     "verified_effect": False, "camera_pose_observed": False,
                     "note": "Inspect a new preview snapshot. Input acknowledgment does not verify zoom, pan, orbit or subject identity."}
 
-        @reg("Read mesh-import preview LOD sources/files/counts, physics, dimensions, warnings, displayed weights and fee with control visibility. Does not calculate or submit an upload. Quote freshness and file-content bindings remain unverified.", True)
+        @reg("Read importer LOD files/counts, physics, dimensions, warnings, weights, displayed fee and visibility. Does not calculate or upload. Readback is non-atomic; quote freshness and file bytes remain unverified.", True)
         def mesh_upload_status():
             names = {"description_form", "import_scale", "import_dimensions", "upload_fee", "status",
                      "lod_status_message_text", "physics_status_message_text", "physics_triangles",

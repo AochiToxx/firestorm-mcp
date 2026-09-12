@@ -1,11 +1,13 @@
-# Security reporting and operating boundary
+# Security
 
-This alpha grants powerful access to a local viewer. Use it only with an MCP host and local software you trust. The HTTP bridge binds to loopback, requires a per-session token and rejects browser Origin requests. Same-user processes can read its local connection file; this is not isolation from other software running as that user. Do not expose the endpoint through a tunnel or public web server.
+Firestorm MCP gives trusted local software access to your viewer. The bridge binds to loopback, requires a session token and rejects browser Origin requests. It bypasses proxies and refuses redirects. Do not expose its internal `/rpc` endpoint publicly or through a tunnel.
 
-The client bypasses configured proxies and refuses HTTP redirects, including redirects to other loopback paths. Rejected small HTTP request bodies are drained with a short bound to avoid Windows socket resets; they are never parsed or dispatched. CI checks installed dependencies against published advisories. This is a point-in-time check, not a guarantee that unknown vulnerabilities are absent.
+Same-user processes can read the local connection file. Leases coordinate clients but do not block human input. Generic tools do not enforce a universal no-spend policy.
 
-Use GitHub **Security → Report a vulnerability** when private vulnerability reporting is available. If that option is unavailable, ask for a private reporting channel in a minimal issue containing no exploit details, tokens, logs or personal data. Do not place credentials or private captures in public issues.
+## Report a vulnerability
 
-Reports should identify the version, affected boundary, a minimal synthetic reproduction and impact. Redact machine/account paths and identifiers. The maintainers do not promise a response SLA. Only the current alpha line is maintained; known limitations are documented in the README.
+Use GitHub **Security → Report a vulnerability** when available. Otherwise, request a private reporting channel in an issue without including exploit details or sensitive data.
 
-Generic UI and viewer APIs can perform consequential actions. Leases coordinate cooperating clients and do not lock out human input. Never treat the MCP as a universal no-spend or transaction-approval enforcement system.
+Include the package version, affected boundary, impact and a small synthetic reproduction. Exclude tokens, private paths, account identifiers and unreviewed logs/captures.
+
+CI checks dependencies against published advisories. A passing scan covers known advisories at that time, not undiscovered vulnerabilities. Only the current alpha line is maintained; no response SLA is promised.

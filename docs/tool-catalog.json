@@ -270,7 +270,7 @@
   },
   {
     "name": "control_acquire",
-    "description": "Acquire exclusive bridge control for a multi-step workflow. Other clients can still read connection status/events. Renew before expiry and release in finally.",
+    "description": "Acquire a workflow control lease. Other clients can still read status/events. Renew before expiry and release in finally; human input remains possible.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -547,7 +547,7 @@
   },
   {
     "name": "mesh_preview_camera",
-    "description": "Adjust only the open mesh uploader's preview camera using a bounded path-targeted drag. horizontal/vertical are fractions of its freshly inspected preview rectangle, each -0.45 to 0.45. Positive vertical zooms in; zoom requires horizontal=0. Pan/orbit use the viewer's modifiers. Does not move the world camera. Capture afterward to verify composition; no exact pose getter/restoration is available.",
+    "description": "Drag the mesh uploader's preview camera; world camera stays unchanged. Fractions are bounded to -0.45..0.45 of the inspected rectangle. Positive vertical zooms in; zoom needs horizontal=0. Capture to verify. No exact pose readback or restoration.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -598,7 +598,7 @@
   },
   {
     "name": "mesh_upload_status",
-    "description": "Read mesh-import preview LOD sources/files/counts, physics, dimensions, warnings, displayed weights and fee with control visibility. Does not calculate or submit an upload. Quote freshness and file-content bindings remain unverified.",
+    "description": "Read importer LOD files/counts, physics, dimensions, warnings, weights, displayed fee and visibility. Does not calculate or upload. Readback is non-atomic; quote freshness and file bytes remain unverified.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {},
@@ -613,7 +613,7 @@
   },
   {
     "name": "native_file_choose",
-    "description": "Windows only: select an existing file in a freshly discovered Firestorm Open dialog. Verifies ownership and filename readback. Import success needs viewer readback. Know which action opened the picker first. Other systems require manual file selection.",
+    "description": "Select a file in a freshly discovered Windows Firestorm Open dialog. Checks ownership and filename; verify import afterward. Confirm which workflow opened it. Other platforms need manual selection.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -782,7 +782,7 @@
   },
   {
     "name": "ui_click",
-    "description": "Click a visible, enabled control by path. Supply floater (registered name) to invoke a unique button's callback instead of coordinate input. Optional observe_path returns before/after UI state. Handling/callback completion is not effect verification; inspect the readback.",
+    "description": "Click a visible, enabled control. A registered floater invokes a unique button callback; otherwise uses coordinates. observe_path returns before/after state. Verify the effect from readback.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -834,7 +834,7 @@
   },
   {
     "name": "ui_find",
-    "description": "Find UI paths in an explicit narrow subtree. Search path or basename using contains/exact/prefix/glob matching (case-insensitive). max_depth=1 selects the root and immediate children. Pages have explicit next_offset/truncated; the viewer still enumerates the entire requested subtree, so keep under narrow.",
+    "description": "Search paths or basenames, case-insensitively, within a narrow under path. max_depth=1 includes root and children. Follow next_offset for more results; each page still enumerates the requested subtree.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -932,7 +932,7 @@
   },
   {
     "name": "ui_inspect",
-    "description": "Inspect a known UI path's geometry and enabled/visible state. Use floater_open and ui_find to discover panel controls.",
+    "description": "Read a known UI path's geometry and enabled/visible state without opening or focusing it. Discover children with scoped ui_find.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -997,7 +997,7 @@
   },
   {
     "name": "ui_press_key",
-    "description": "Press/release a key targeted to a visible enabled path and return UI readback. Path is required: the viewer sets keyboard focus to it during dispatch. Modifiers are CTL/ALT/SHIFT/MAC_CONTROL. Enter can commit a form. Human input and viewer shortcuts can still interfere; verify the returned state.",
+    "description": "Focus a required visible, enabled path, press/release a key and read back state. Modifiers: CTL/ALT/SHIFT/MAC_CONTROL. Enter can commit forms. Human input and shortcuts can interfere; verify the result.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
