@@ -1,5 +1,8 @@
 blank_issues_enabled: true
 contact_links:
+  - name: Report a security vulnerability privately
+    url: https://github.com/AochiToxx/firestorm-mcp/security/advisories/new
+    about: Send a private report to maintainers. Keep exploit details out of public issues.
   - name: Questions and collaboration
     url: https://github.com/AochiToxx/firestorm-mcp/discussions
     about: Share ideas, ask setup questions or coordinate contributions.

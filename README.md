@@ -92,4 +92,6 @@ Help improve installation, platform support, viewer tools or agent workflows. Op
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) and [AGENTS.md](AGENTS.md) before a pull request. Keep credentials, private captures and product assets out of contributions.
 
+Pull requests must pass CI and security checks. For private vulnerability reports and security boundaries, see [SECURITY.md](SECURITY.md).
+
 This independent project uses the [MIT licence](LICENSE). Firestorm and other dependencies keep their own licences; see [THIRD_PARTY.md](THIRD_PARTY.md).
