@@ -12,7 +12,7 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('archive', type=Path)
 args = parser.parse_args()
 with tempfile.TemporaryDirectory(prefix='firestorm-setup-') as folder:
-    root = Path(folder)
+    root = Path(folder).resolve()  # macOS /var and /private/var refer to the same directory.
     with zipfile.ZipFile(args.archive) as archive:
         # This checks an internally built, allowlisted release, not user input.
         archive.extractall(root)
@@ -28,7 +28,7 @@ with tempfile.TemporaryDirectory(prefix='firestorm-setup-') as folder:
                             check=True, capture_output=True, text=True, timeout=30)
     entry = json.loads(result.stdout)['mcpServers']['firestorm']
     assert Path(entry['command']).absolute() == python.absolute()
-    result = subprocess.run([str(python), '-m', 'firestorm_mcp.probe', '--data-dir', env['FIRESTORM_MCP_HOME']],
+    result = subprocess.run([entry['command'], '-m', 'firestorm_mcp.probe', *entry['args'][2:]],
                             cwd=root, env=env, capture_output=True, text=True, timeout=90)
     assert result.returncode == 2, result.stderr
     report = json.loads(result.stdout)

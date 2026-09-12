@@ -12,7 +12,7 @@ Download the `0.3.0a2` setup/source ZIP from [Releases](https://github.com/Aochi
 | Start the viewer when ready | `Start-FirestormMCP.cmd` | `sh Start-FirestormMCP.sh` |
 | Check the existing connection | `Check-FirestormMCP.cmd` | `sh Check-FirestormMCP.sh` |
 
-The common Python installer creates `.venv`, upgrades only that environment's pip and installs the package. It prints ready-to-copy JSON; it never edits agent configuration or starts Firestorm. Merge its `firestorm` entry into your host's configuration, keeping other servers. Host-specific wrappers are below. `--development` requests an editable installation with test dependencies.
+The common Python installer creates `.venv`, upgrades only that environment's pip and installs the package. It prints ready-to-copy JSON; it never edits agent configuration or starts Firestorm. `Install.cmd` keeps its console open until you press a key so a double-click launch does not lose the output. For unattended setup, invoke `python install.py` directly. Merge its `firestorm` entry into your host's configuration, keeping other servers. Host-specific wrappers are below. `--development` requests an editable installation with test dependencies.
 
 Use `Install.ps1 -Python 'C:\path\to\python.exe' -Development` to select a Windows interpreter with the compatibility wrapper. On POSIX use `PYTHON=/absolute/path/to/python3 sh Install.sh`. Do not copy `.venv` between machines, rename a folder containing it, or install on top of an active consumer environment. Extract a fresh folder if the installer reports a redirected, incomplete or foreign-OS environment.
 
@@ -42,69 +42,55 @@ sh Start-FirestormMCP.sh --viewer /Applications/Firestorm-Releasex64.app
 .\Start-FirestormMCP.ps1 -Viewer 'D:/Apps/Firestorm/Firestorm-Releasex64.exe'
 ```
 
-Regenerate/merge the printed config after selecting another viewer. Add matching `--data-dir` options to configure/launch/check if you choose a different state directory (`-DataDir` in the PowerShell wrapper). `FIRESTORM_VIEWER` is an environment alternative to `--viewer`; GUI hosts do not necessarily inherit shell exports, which is why generated config uses explicit resource/state paths.
+Regenerate/merge the printed config after selecting another viewer. Quoted `~` paths are expanded consistently by all Python entry points. Add matching `--data-dir` options to configure/launch/check if you choose a different state directory (`-DataDir` in the PowerShell wrapper). `FIRESTORM_VIEWER` is an environment alternative to `--viewer`; GUI hosts do not necessarily inherit shell exports, which is why generated config uses explicit resource/state paths.
 
 The launcher validates the layout, leaves a running viewer alone and refuses an existing launch lock. `--dry-run` validates without launching/writing; `--login-screen` requests the login screen while normal launches retain the viewer's login preference. The Windows PowerShell equivalents are `-DryRun` and `-LoginScreen`. LEAP must start with the viewer; starting the MCP alone cannot attach to an existing normal viewer session.
 
-## MCP hosts
+## Generate the right format for your MCP host
 
-The examples target `0.3.0a2` (the same runtime flags are available in `0.3.0a1`). Omit `--tool-profile compact` when configuring the older `0.2.0a1` release, which does not implement that flag. Current protocol and host verification are recorded in [COMPATIBILITY.md](COMPATIBILITY.md); a configuration example is not a claim that the host's UI has been tested.
+Use the generator from the installed environment. It preserves **every** selected
+argument, including `--data-dir` and `--viewer-dir`, in each host's wrapper. Do not
+reconstruct a shorter command from an unrelated example or discard custom paths.
 
-Use the absolute environment Python path as the command and `-m firestorm_mcp.server` as arguments. A JSON example is in the README. For Codex's TOML configuration, add the following deliberately at the scope you want; no installer edits it automatically:
+| Host | Generator option | Where the printed entry belongs |
+| --- | --- | --- |
+| Claude Desktop / Cursor and hosts using `mcpServers` | `--format json` (default) | The host's local MCP JSON; merge the `firestorm` entry |
+| Codex | `--format codex` | The intended `config.toml` scope; merge `[mcp_servers.firestorm]` |
+| VS Code extension host / Copilot | `--format vscode` | `.vscode/mcp.json`; merge the printed `servers.firestorm` entry |
+| Claude Code and other CLI-configured hosts | Default JSON gives the exact command/args | Use the host's local stdio registration with the **entire** generated argument list |
 
-```toml
-[mcp_servers.firestorm]
-command = 'C:\path\to\firestorm-mcp\.venv\Scripts\python.exe'
-args = ['-m', 'firestorm_mcp.server', '--tool-profile', 'compact']
-tool_timeout_sec = 180
-```
-
-Alternatively use the Codex CLI: `codex mcp add firestorm -- C:\path\to\firestorm-mcp\.venv\Scripts\python.exe -m firestorm_mcp.server --tool-profile compact`. Check an existing entry first rather than replacing another integration. Other MCP hosts use the same stdio command with their own configuration wrapper.
-
-Codex's per-tool timeout defaults to 60 seconds; a multi-read importer/orbit workflow can take longer. The example allows 180 seconds at the host. An individual viewer RPC still has its own bounded timeout; increasing the host timeout does not cancel or retry sent actions. See [official Codex MCP configuration](https://developers.openai.com/codex/mcp).
-
-### Claude Desktop and Cursor
-
-Use the following server entry in Claude Desktop's MCP configuration or Cursor's `.cursor/mcp.json`. Use the command/args printed by `firestorm-mcp-config` on the machine running Firestorm; the Windows path below is only an example. The root object is `mcpServers`:
-
-```json
-{
-  "mcpServers": {
-    "firestorm": {
-      "command": "C:/path/to/firestorm-mcp/.venv/Scripts/python.exe",
-      "args": ["-m", "firestorm_mcp.server", "--tool-profile", "compact"]
-    }
-  }
-}
-```
-
-See [Cursor's MCP guide](https://cursor.com/docs/mcp) and the [official local-server guide](https://modelcontextprotocol.io/docs/develop/connect-local-servers). Launching a server through a desktop application can use a different PATH from your terminal; the absolute Python path avoids that ambiguity.
-
-### Claude Code
-
-From PowerShell, use [Claude Code's stdio registration](https://code.claude.com/docs/en/mcp):
+Windows, from the extracted folder:
 
 ```powershell
-claude mcp add --transport stdio firestorm -- 'C:/path/to/firestorm-mcp/.venv/Scripts/python.exe' -m firestorm_mcp.server --tool-profile compact
+.\.venv\Scripts\python.exe -m firestorm_mcp.configure --format codex
 ```
 
-### VS Code / Copilot
+Linux/macOS, from the extracted folder:
 
-For the VS Code extension host, `.vscode/mcp.json` uses `servers`, not `mcpServers`:
-
-```json
-{
-  "servers": {
-    "firestorm": {
-      "type": "stdio",
-      "command": "C:/path/to/firestorm-mcp/.venv/Scripts/python.exe",
-      "args": ["-m", "firestorm_mcp.server", "--tool-profile", "compact"]
-    }
-  }
-}
+```sh
+.venv/bin/python -m firestorm_mcp.configure --format codex
 ```
 
-The newer Agent Host has its own configuration scope; consult the [current VS Code reference](https://code.visualstudio.com/docs/agents/reference/mcp-configuration) when using the separate Agents Window or portable Copilot configuration. Select only relevant tools when combining multiple servers: [VS Code documents a 128-tool request limit](https://code.visualstudio.com/docs/agents/run/tools). Compact mode reduces this project's listed tools to 43 but does not reserve capacity for other servers or restrict `viewer_call` authority.
+Change `codex` to `json` or `vscode` for your host. Add the same `--viewer` and
+`--data-dir` selections used for launch if they are nonstandard. The generated
+command is absolute and retains the virtual environment; it does not depend on
+the desktop app inheriting your terminal's PATH. If Firestorm has not been
+installed yet, the default configuration leaves viewer discovery enabled instead
+of pinning a nonexistent directory. Multiple detected viewers require a choice.
+
+Codex output also sets `tool_timeout_sec = 180`, allowing longer multi-read
+workflows than its default 60 seconds. It does not increase individual viewer RPC
+timeouts or cancel an already-sent action. The generator changes no host files or
+permissions. Follow [official Codex MCP configuration](https://developers.openai.com/codex/mcp).
+
+These are format-checked examples, not a tested application UI matrix. Consult
+[Cursor](https://cursor.com/docs/mcp), [Claude Code](https://code.claude.com/docs/en/mcp),
+[local MCP servers](https://modelcontextprotocol.io/docs/develop/connect-local-servers)
+or the [VS Code MCP reference](https://code.visualstudio.com/docs/agents/reference/mcp-configuration)
+for the correct installation scope. VS Code's separate Agent Host can use another
+scope; the `vscode` output targets the extension-host `servers` format. Keep the
+compact profile when your host has tool-count limits; it changes discovery
+presentation, not tool authority.
 
 ### Local desktop requirement
 

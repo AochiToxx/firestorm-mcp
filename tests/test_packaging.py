@@ -166,6 +166,67 @@ def test_doctor_is_offline_and_contains_no_local_paths(tmp_path, monkeypatch):
     assert not (tmp_path / 'state').exists()
 
 
+def test_offline_configuration_does_not_pin_a_missing_viewer(tmp_path, monkeypatch):
+    from firestorm_mcp import configure
+    monkeypatch.delenv('FIRESTORM_VIEWER', raising=False)
+    monkeypatch.delenv('FIRESTORM_VIEWER_DIR', raising=False)
+    monkeypatch.setattr(configure, 'find_viewer', lambda *_: (_ for _ in ()).throw(FileNotFoundError()))
+    entry = configure.configuration(tmp_path)['mcpServers']['firestorm']
+    assert '--viewer-dir' not in entry['args']
+    with pytest.raises(FileNotFoundError):
+        configure.configuration(tmp_path, tmp_path / 'invalid-viewer')
+    monkeypatch.setattr(configure, 'find_viewer', lambda *_: (_ for _ in ()).throw(ValueError('Multiple viewers')))
+    with pytest.raises(ValueError, match='Multiple'):
+        configure.configuration(tmp_path)
+
+
+def test_host_formats_preserve_every_selected_argument(tmp_path, monkeypatch):
+    from firestorm_mcp import configure
+    import json
+    import tomllib
+    viewer = synthetic_viewer(tmp_path, 'darwin')
+    monkeypatch.setattr(paths, 'host_platform', lambda: 'darwin')
+    config = configure.configuration(tmp_path / ('custom state ' + chr(0x1F333)), viewer)
+    expected = config['mcpServers']['firestorm']
+    codex = tomllib.loads(configure.render(config, 'codex'))['mcp_servers']['firestorm']
+    vscode = json.loads(configure.render(config, 'vscode'))['servers']['firestorm']
+    assert codex['args'] == vscode['args'] == expected['args']
+    assert codex['command'] == vscode['command'] == expected['command']
+    assert codex['tool_timeout_sec'] == 180
+
+
+def test_quoted_home_state_resolves_consistently(tmp_path, monkeypatch):
+    from firestorm_mcp import configure, doctor, probe
+    from firestorm_mcp.server import Tools
+    import asyncio
+    import os
+    monkeypatch.setenv('USERPROFILE' if os.name == 'nt' else 'HOME', str(tmp_path))
+    viewer = synthetic_viewer(tmp_path, 'linux')
+    monkeypatch.setattr(paths, 'host_platform', lambda: 'linux')
+    monkeypatch.setattr(launcher, 'running_viewers', lambda: [])
+    target = Path('~/custom state')
+    expected = (tmp_path / 'custom state').resolve()
+    config = configure.configuration(target, viewer)['mcpServers']['firestorm']
+    assert config['args'][config['args'].index('--data-dir') + 1] == str(expected)
+    launch = launcher.launch(viewer, target, dry_run=True)
+    assert Path(launch['arguments'][2]).parent.parent == expected
+    assert Tools(target).root == expected
+    assert doctor.diagnose(viewer, target)['viewer_contacted'] is False
+    calls = []
+    class StopAfterParameters:
+        def __init__(self, params):
+            calls.append(params)
+        async def __aenter__(self):
+            raise RuntimeError('synthetic stop before transport')
+        async def __aexit__(self, *args):
+            pass
+    monkeypatch.setattr(probe, 'Client', StopAfterParameters)
+    with pytest.raises(RuntimeError, match='synthetic stop'):
+        asyncio.run(probe.probe(target, tmp_path))
+    args = calls[0].args
+    assert args[args.index('--data-dir') + 1] == str(expected)
+
+
 def test_unsupported_native_selection_fails_before_acquiring_a_lease(tmp_path, monkeypatch):
     from firestorm_mcp.server import Tools
     import firestorm_mcp.server as server

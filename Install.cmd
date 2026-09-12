@@ -1,3 +1,5 @@
 @echo off
 python "%~dp0install.py" %*
-if errorlevel 1 pause
+set "setup_exit=%errorlevel%"
+pause
+exit /b %setup_exit%

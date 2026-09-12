@@ -60,7 +60,7 @@ CI uses synthetic fixtures and never launches a real viewer. A green ARM64 job i
 1. Install **Python 3.11–3.14** and, for live control, a compatible [Firestorm viewer](https://www.firestormviewer.org/). Keep the viewer and MCP on the same desktop computer and user account. Python alone is enough for offline asset inspection.
 2. Download the **setup/source ZIP** above and extract it into a permanent local folder. Do not copy a virtual environment from another machine or OS. The private repository still requires GitHub access.
 3. Run **`Install.cmd`** on Windows, or **`sh Install.sh`** from a terminal in that folder on Linux/macOS. Both use the same `install.py`, create an isolated `.venv` and print configuration with your machine's absolute paths. No administrator/root access is needed in a user-writable folder.
-4. Copy the printed `firestorm` entry into your MCP host's local stdio configuration. Keep other entries. For a different host wrapper or nonstandard viewer location, follow [installation and configuration](docs/INSTALLATION.md).
+4. Copy the printed `firestorm` entry into your MCP host's local stdio configuration. The generator also offers `--format codex` and `--format vscode` so each host keeps all selected paths. Keep other entries. For a different host wrapper or nonstandard viewer location, follow [installation and configuration](docs/INSTALLATION.md).
 5. When ready for a viewer session, run **`Start-FirestormMCP.cmd`** or **`sh Start-FirestormMCP.sh`**, sign in normally, then run the matching **`Check-FirestormMCP.cmd`** / **`sh Check-FirestormMCP.sh`**. An already-running viewer is left alone; arrange a normal close and launcher start when convenient.
 
 The platform-neutral installer can also be run as `python install.py` (Windows) or `python3 install.py` (Linux/macOS). An optional skill is a separate host installation; see [SKILLS.md](docs/SKILLS.md).
@@ -108,7 +108,9 @@ Use the optional [firestorm-mesh-preview skill](skills/firestorm-mesh-preview/SK
 
 If native tool discovery is missing from your current agent session, the **real MCP SDK fallback** in [the agent guide](docs/AGENT_GUIDE.md) connects directly without restarting your agent application. `python -m firestorm_mcp.probe` tests this entry point without taking a lease or sending UI input.
 
-### Example: inspect a model without submitting an upload
+### Windows example: inspect a model without submitting an upload
+
+This recipe uses the Windows native picker. Check `connection_status.local_platform.native_file_dialogs` first. On Linux/macOS, arrange manual file selection in the model importer, then resume at `mesh_upload_status`; do not call the native picker tools. Establish ownership/reuse authority before opening a preview, as described in the [skill](skills/firestorm-mesh-preview/SKILL.md).
 
 ```text
 asset_inspect {"filename":"C:/exports/example-high.dae"}

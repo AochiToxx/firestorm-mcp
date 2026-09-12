@@ -2,11 +2,13 @@
 
 ## Portable setup alpha 0.3.0a2
 
-On 12 September 2026 the Windows isolated suite passed **82 tests**. New cases cover Windows/Linux/macOS layout selection, dry-run without side effects, busy-viewer refusal, preservation of foreign launch locks, resource-aware launch plans, ambiguous discovery, unsafe bundle paths, platform state defaults, local configuration, offline diagnostic privacy and unsupported native calls failing before lease acquisition. All viewer launch tests replace process creation with a synthetic recorder.
+On 12 September 2026 the Windows isolated suite passed **85 tests**. New cases cover Windows/Linux/macOS layout selection, dry-run without side effects, busy-viewer refusal, preservation of foreign launch locks, resource-aware launch plans, ambiguous discovery, unsafe bundle paths, platform state defaults, local configuration, offline diagnostic privacy and unsupported native calls failing before lease acquisition. All viewer launch tests replace process creation with a synthetic recorder. Added regressions also cover offline-first configuration, preservation of every argument in JSON/TOML host formats and consistent quoted-home path expansion across configuration, launch, server, diagnostics and probe.
 
-The redirect-refusal test server now consumes the request body before replying. Without this, Windows could reset the test socket before the redirect response was read; the production redirect policy is unchanged.
+The source-install check normalizes macOS `/var` versus `/private/var` aliases before comparing the generated environment path; it also exercises the probe with the exact generated arguments. The redirect-refusal test server now consumes the request body before replying. Without this, Windows could reset the test socket before the redirect response was read; the production redirect policy is unchanged.
 
 CI now defines eight jobs: Windows Python 3.11–3.14, and Python 3.12 on Ubuntu x64/ARM64 plus macOS Intel/ARM64. Each Python 3.12 job builds packages, tests the source ZIP installer, checks a freshly installed wheel and runs the official Inspector and dependency audit. The release's linked CI run records execution outcomes; the workflow definition alone is not a passing result.
+
+Lichen performed an offline setup review. Findings about dropped host arguments, inconsistent quoted-home paths, disappearing Windows install output and a platform-ambiguous native-picker recipe were corrected. This review is separate from live product acceptance.
 
 No live viewer was launched, contacted or migrated for this update. The existing consumer stays on its separately installed 0.3.0a1 runtime. Linux/macOS live control, native file-picker adapters, actual Pi hardware, remote transport and host-application UI activation are not verified by these package/protocol checks.
 

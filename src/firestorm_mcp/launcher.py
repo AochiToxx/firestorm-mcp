@@ -50,7 +50,7 @@ def launch(viewer: Path, root: Path, login_screen=False, dry_run=False):
     active = running_viewers()
     if active:
         raise RuntimeError("Firestorm is already running. No process was changed; coordinate a later launcher start.")
-    runtime = root.resolve() / "runtime"
+    runtime = root.expanduser().resolve() / "runtime"
     helper = Path(__file__).with_name("leap_entry.py").resolve(strict=True)
     settings = runtime / "session-settings.xml"
     xml = session_settings(Path(sys.executable), helper, runtime, installed.resources)

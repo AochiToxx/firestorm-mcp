@@ -46,7 +46,8 @@ class Tools:
             raise ValueError("tool_profile must be all or compact")
         self.tool_profile = tool_profile
         viewer_dir = viewer_dir or viewer_directory()
-        self.root, self.viewer_dir = Path(root), Path(viewer_dir)
+        self.root = Path(root).expanduser().resolve()
+        self.viewer_dir = Path(viewer_dir).expanduser().resolve()
         self.client = BridgeClient(self.root / "runtime")
         self.captures = self.root / "captures"
         self.captures.mkdir(parents=True, exist_ok=True)

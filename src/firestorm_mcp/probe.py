@@ -23,6 +23,8 @@ def unpack(result):
 
 
 async def probe(root, viewer_dir=None, tool_profile="all"):
+    root = Path(root).expanduser().resolve()
+    viewer_dir = Path(viewer_dir or viewer_directory()).expanduser().resolve()
     params = StdioServerParameters(command=sys.executable,
         args=["-m", "firestorm_mcp.server", "--data-dir", str(root), "--viewer-dir", str(viewer_dir or viewer_directory()),
               "--tool-profile", tool_profile])
@@ -51,7 +53,7 @@ def main():
     parser.add_argument("--output", type=Path, help="Optional JSON report path; contains no bridge token")
     args = parser.parse_args()
     try:
-        report = asyncio.run(asyncio.wait_for(probe(args.root.resolve(), args.viewer_dir, args.tool_profile), timeout=90))
+        report = asyncio.run(asyncio.wait_for(probe(args.root, args.viewer_dir, args.tool_profile), timeout=90))
         code = 0 if report["connection"].get("connected") else 2
     except Exception as exc:
         report = {"mcp_initialized": False, "error": type(exc).__name__ + ": " + str(exc)}
