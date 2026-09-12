@@ -8,13 +8,26 @@ permissions:
   contents: read
 jobs:
   test:
-    name: Windows Python ${{ matrix.python }}
-    runs-on: windows-latest
-    timeout-minutes: 15
+    name: ${{ matrix.os }} Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
     strategy:
       fail-fast: false
       matrix:
         python: ['3.11', '3.12', '3.13', '3.14']
+        os: [windows-latest]
+        include:
+          - os: ubuntu-24.04
+            python: '3.12'
+          - os: ubuntu-24.04-arm
+            python: '3.12'
+          - os: macos-15-intel
+            python: '3.12'
+          - os: macos-15
+            python: '3.12'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -41,11 +54,10 @@ jobs:
           python scripts/build_skill.py
       - name: Test installed wheel in a fresh environment
         if: matrix.python == '3.12'
-        shell: pwsh
-        run: |
-          $wheels = @(Get-ChildItem -LiteralPath dist -Filter '*.whl')
-          if ($wheels.Count -ne 1) { throw 'Expected one wheel' }
-          python scripts/verify_wheel.py $wheels[0].FullName
+        run: python scripts/verify_wheel.py dist/*.whl
+      - name: Test the downloaded-source setup procedure
+        if: matrix.python == '3.12'
+        run: python scripts/verify_source.py dist/*-source.zip
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         if: matrix.python == '3.12'
         with:

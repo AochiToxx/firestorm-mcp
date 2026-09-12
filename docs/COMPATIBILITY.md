@@ -49,7 +49,7 @@ The tool-count issue is a host constraint, not an MCP-wide maximum. VS Code docu
 | Official Inspector | `scripts/verify_inspector.py` runs strict discovery and a disconnected-status call in temporary state; requires Node >=22.19.0 |
 | Codex | Coordinated candidate cutover and real SDK-v2 stdio workflow from a Codex task; native tool refresh/application UI acceptance is separate |
 | Claude Desktop / Claude Code / Cursor / VS Code | Official configuration formats researched and documented; application UI acceptance not yet run |
-| Windows/Python | CI matrix covers 3.11/3.12/3.13/3.14. Platform-independent wheel filename does not certify non-Windows viewer control |
+| OS/Python | CI covers Windows 3.11–3.14 and Linux x64/ARM64 plus macOS Intel/ARM64 on 3.12. Source setup and wheel checks run without a viewer; live control evidence remains Windows 0.3.0a1. See [platform matrix](PLATFORMS.md) |
 | Remote/cloud/WSL/container-only hosts | No direct support for native desktop control; no public MCP HTTP endpoint is implemented |
 
 See [VALIDATION.md](VALIDATION.md) for executed checks and [INSTALLATION.md](INSTALLATION.md) for exact host configuration. Passing a simulated importer test does not verify a live viewer or a Second Life upload.

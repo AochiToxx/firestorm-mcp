@@ -1,6 +1,6 @@
 # Optional agent workflow skill
 
-**MCP runtime:** 0.3.0a1. **Skill:** `firestorm-mesh-preview` 0.1.0.
+**MCP runtime:** 0.3.0a2 (live workflow baseline: 0.3.0a1). **Skill:** `firestorm-mesh-preview` 0.1.0.
 
 The MCP provides callable viewer tools. The skill gives an agent a concise entry
 point and an on-demand importer procedure for choosing and sequencing those tools.
@@ -80,3 +80,7 @@ The builder includes only the two skill documents and the root MIT licence. The
 normal source-distribution builder includes the skill sources in future source
 packages. The Python wheel remains the MCP runtime, without automatically
 installing files into an agent host's personal directories.
+
+## Platform boundary
+
+The instructions are portable text; their tested importer procedure remains the Windows baseline. With runtime 0.3.0a2, inspect `connection_status.local_platform` first. Linux/macOS native pickers are unavailable: arrange manual file selection and then read back the importer. Installing a skill does not add native OS adapters or a Raspberry Pi viewer. Follow the [platform matrix](PLATFORMS.md) before applying Windows-specific steps.

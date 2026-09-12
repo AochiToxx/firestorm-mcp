@@ -14,7 +14,8 @@ version = tomllib.loads((root / 'pyproject.toml').read_text())['project']['versi
 root_names = {'README.md', 'LICENSE', 'CONTRIBUTING.md', 'AGENTS.md', 'SECURITY.md',
               'CHANGELOG.md', 'THIRD_PARTY.md', 'pyproject.toml', 'requirements-lock.txt',
               'Install.cmd', 'Install.ps1', 'Start-FirestormMCP.cmd', 'Start-FirestormMCP.ps1',
-              'Check-FirestormMCP.cmd', '.gitignore', '.gitattributes', 'MANIFEST.in'}
+              'Check-FirestormMCP.cmd', '.gitignore', '.gitattributes', 'MANIFEST.in',
+              'install.py', 'Install.sh', 'Start-FirestormMCP.sh', 'Check-FirestormMCP.sh'}
 trees = {'src', 'tests', 'docs', 'scripts', 'skills', '.github'}
 suffixes = {'.py', '.dae', '.md', '.json', '.yml', '.yaml', '.txt'}
 files = []

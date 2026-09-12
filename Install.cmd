@@ -1,3 +1,5 @@
 @echo off
-powershell.exe -NoProfile -File "%~dp0Install.ps1" %*
-if errorlevel 1 pause
+python "%~dp0install.py" %*
+set "setup_exit=%errorlevel%"
+pause
+exit /b %setup_exit%

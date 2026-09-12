@@ -11,7 +11,7 @@ Generated from the current workflow definitions and historical Firestorm 7.2.4.8
 | `control_acquire` | Acquire exclusive bridge control for a multi-step workflow. Other clients can still read connection status/events. Renew before expiry and release in finally. |
 | `control_release` | Release this client's exclusive control lease. |
 | `native_file_dialogs` | List recognized Windows Open-file dialogs owned by this Firestorm installation. English common dialogs only; unsupported layouts require manual selection. |
-| `native_file_choose` | Select an existing file in a freshly discovered Firestorm Open dialog. Verifies window ownership and filename readback. Import success must be checked in viewer state. Know which import/upload action opened the picker first. |
+| `native_file_choose` | Windows only: select an existing file in a freshly discovered Firestorm Open dialog. Verifies ownership and filename readback. Import success needs viewer readback. Know which action opened the picker first. Other systems require manual file selection. |
 | `connection_status` | Check whether the local Firestorm LEAP helper is connected. Does not log in or change the viewer. |
 | `capabilities_refresh` | Discover all APIs and operations exposed by this running viewer; refresh dynamic MCP tool discovery. |
 | `viewer_api_inspect` | Read the live description and required arguments for an API or operation. Discover before calling unfamiliar operations. |

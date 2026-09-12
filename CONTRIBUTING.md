@@ -8,7 +8,7 @@ Use the bug or feature issue template. Include OS, Python/MCP/viewer versions, e
 
 ## Develop and test
 
-Clone/fork the repository, work in a focused branch and run `Install.ps1 -Development`, followed by `.venv/Scripts/python.exe -m pytest -q`. Tests use temporary roots and simulated transports; they must not connect to a contributor's default runtime or start a viewer. Package tests should also install the wheel into a fresh environment and verify its offline stdio entry.
+Clone/fork the repository, work in a focused branch and run `python install.py --development` on Windows or `python3 install.py --development` on Linux/macOS, followed by `.venv/Scripts/python.exe -m pytest -q` or `.venv/bin/python -m pytest -q` respectively. Tests use temporary roots and simulated transports; they must not connect to a contributor's default runtime or start a viewer. Package tests should also install the wheel into a fresh environment and verify its offline stdio entry.
 
 Real viewer checks are opt-in. Acquire its lease, use a safe synthetic fixture, record actual results, restore supported temporary changes and release control. Never kill a process or remove someone else's lock to gain access. A paid upload, message, inventory/world mutation or change to a shared configuration requires the user's explicit task authority.
 
@@ -29,3 +29,7 @@ For mesh-preview use, the optional [workflow skill](docs/SKILLS.md) packages the
 Triage issues, agree scope, review a focused PR, require passing automated checks, and record live verification separately. Release numbered versions rather than asking users to follow a moving development branch. Do not make a consumer runtime follow development code automatically. Review sensitive reports privately through GitHub's private vulnerability reporting when enabled.
 
 Contributions are accepted under the project's MIT licence. Be respectful, keep feedback about the work, and report harassment to repository maintainers.
+
+## Platform contributions
+
+Record OS/version, CPU architecture, Python, viewer build and MCP host. Separate package installation, offline MCP tests, launcher/LEAP connection and observed desktop effects. The CI matrix exercises Windows, Linux x64/ARM64 and macOS Intel/ARM64; it never launches Firestorm. ARM64 Ubuntu results do not certify Raspberry Pi hardware/OS or an ARM viewer. See [PLATFORMS.md](docs/PLATFORMS.md) for the test checklist and current gaps. New native picker adapters must verify viewer ownership and filename readback, with synthetic tests before opt-in desktop checks.

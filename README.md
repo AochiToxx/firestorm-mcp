@@ -2,11 +2,11 @@
 
 **Give AI agents structured tools for the Firestorm viewer: inspect 3D exports, drive mesh previews, control the camera and collect verification evidence in Second Life.**
 
-[Downloads](#downloads) · [Install](#install-on-windows) · [Capabilities](#what-can-it-do-today) · [Agent skill](docs/SKILLS.md) · [Agent quick start](#for-ai-agents) · [Tool reference](docs/TOOLS.md) · [Contribute](CONTRIBUTING.md) · [Known limits](#known-limits)
+[Downloads](#downloads) · [Install](#install) · [Capabilities](#what-can-it-do-today) · [Agent skill](docs/SKILLS.md) · [Agent quick start](#for-ai-agents) · [Tool reference](docs/TOOLS.md) · [Contribute](CONTRIBUTING.md) · [Known limits](#known-limits)
 
-**Version:** `0.3.0a1` · Windows alpha · Python 3.11–3.14 tested · MIT licence
+**Version:** `0.3.0a2` · Portable setup alpha · Windows live baseline · MIT licence
 
-This release adds MCP SDK v2 and protocol compatibility through `2026-07-28`, a compact tool profile, structured results, precise paged UI searches, path-targeted keys, registered button callbacks, uploader camera input and blank-capture detection. See the [compatibility audit and remaining work](docs/COMPATIBILITY.md).
+This release adds a portable installer, generated local configuration, offline setup diagnostics, Linux/macOS launch layouts and cross-platform CI. Non-Windows viewer control remains experimental. The runtime retains MCP SDK v2 and protocol compatibility through `2026-07-28`, a compact tool profile, structured results, precise paged UI searches, path-targeted keys, registered button callbacks, uploader camera input and blank-capture detection. See the [compatibility audit and remaining work](docs/COMPATIBILITY.md).
 
 Firestorm MCP is an independent, community-oriented **Model Context Protocol (MCP)** server. It connects to an installed Firestorm viewer through the viewer's **LEAP** interface. Your agent works through the same viewer you can see and control; no separate bot avatar or custom viewer build is required.
 
@@ -28,43 +28,46 @@ Startup exposes the 43 workflow tools immediately, even with a stalled viewer. C
 
 ## Downloads
 
-**[Download Firestorm MCP for Windows — setup/source ZIP](https://github.com/AochiToxx/firestorm-mcp/releases/download/v0.3.0a1/firestorm-mcp-0.3.0a1-source.zip)**
+**[Download Firestorm MCP — setup/source ZIP](https://github.com/AochiToxx/firestorm-mcp/releases/download/v0.3.0a2/firestorm-mcp-0.3.0a2-source.zip)**
 
 | Download | Choose this when |
 | --- | --- |
-| [Windows setup/source ZIP](https://github.com/AochiToxx/firestorm-mcp/releases/download/v0.3.0a1/firestorm-mcp-0.3.0a1-source.zip) | Recommended: extract, run `Install.cmd`, then follow the quick start. Includes source, setup scripts, docs and tests. Python and Firestorm are installed separately. |
-| [Python wheel](https://github.com/AochiToxx/firestorm-mcp/releases/download/v0.3.0a1/firestorm_mcp-0.3.0a1-py3-none-any.whl) | You already manage Python environments and want the installed command-line tools. |
-| [SHA-256 checksums](https://github.com/AochiToxx/firestorm-mcp/releases/download/v0.3.0a1/SHA256SUMS.txt) | Verify a downloaded asset against the published release. |
-| [Release notes and all assets](https://github.com/AochiToxx/firestorm-mcp/releases/tag/v0.3.0a1) | Review this alpha's changes, checks and limitations. |
+| [Setup/source ZIP](https://github.com/AochiToxx/firestorm-mcp/releases/download/v0.3.0a2/firestorm-mcp-0.3.0a2-source.zip) | Recommended: extract, run `Install.cmd` on Windows or `sh Install.sh` on Linux/macOS, then follow the quick start. Includes source, setup scripts, docs and tests. Python and Firestorm are installed separately. |
+| [Python wheel](https://github.com/AochiToxx/firestorm-mcp/releases/download/v0.3.0a2/firestorm_mcp-0.3.0a2-py3-none-any.whl) | You already manage Python environments and want the installed command-line tools. |
+| [SHA-256 checksums](https://github.com/AochiToxx/firestorm-mcp/releases/download/v0.3.0a2/SHA256SUMS.txt) | Verify a downloaded asset against the published release. |
+| [Release notes and all assets](https://github.com/AochiToxx/firestorm-mcp/releases/tag/v0.3.0a2) | Review this alpha's changes, checks and limitations. |
 
 Downloads are hosted on this project's GitHub Releases page. They require repository access while the project remains private. This alpha is not yet listed on PyPI or the public MCP Registry.
 
 **Optional companion:** [download the Firestorm mesh-preview skill 0.1.0](https://github.com/AochiToxx/firestorm-mcp/releases/download/skill-v0.1.0/firestorm-mesh-preview-0.1.0.zip). It gives agents the tested importer sequence, control workarounds and evidence rules. It works with the existing 0.3.0a1 MCP; no runtime upgrade is required. See [skill installation and limits](docs/SKILLS.md).
 
-## Install on Windows
+## Platform support
 
-1. Install **Python 3.11 or newer** from [python.org](https://www.python.org/downloads/windows/) and the normal [Firestorm viewer](https://www.firestormviewer.org/). Python must be available as `python` in your terminal.
-2. Download the source ZIP from [Releases](https://github.com/AochiToxx/firestorm-mcp/releases), or choose **Code → Download ZIP**. Extract it to a permanent local folder. While this repository is private, GitHub access is required to download it.
-3. Run **`Install.cmd`**. This creates a dedicated Python environment and installs the MCP. It does not change your agent configuration or start Firestorm.
-4. When you are ready to begin a viewer session, run **`Start-FirestormMCP.cmd`**. Sign in normally in Firestorm. The launcher refuses to replace a running Firestorm process.
-5. Add the MCP command shown below to your agent's MCP configuration. Run **`Check-FirestormMCP.cmd`** to verify the connection.
+The MCP package and the graphical Firestorm viewer have separate requirements.
 
-```json
-{
-  "mcpServers": {
-    "firestorm": {
-      "command": "C:/path/to/firestorm-mcp/.venv/Scripts/python.exe",
-      "args": ["-m", "firestorm_mcp.server", "--tool-profile", "compact"]
-    }
-  }
-}
-```
+| Platform | Package/setup checks | Live viewer and file picking |
+| --- | --- | --- |
+| Windows x64 | Python 3.11–3.14 CI, source installer and wheel checks | Inherited live baseline on Firestorm 7.2.4.80712; recognized English file dialogs automated |
+| Linux x64 | Python 3.12 CI, source installer and wheel checks | Experimental launcher through the distribution's `firestorm` script; manual file picking |
+| macOS Intel / Apple Silicon | Python 3.12 CI on both architectures, source installer and wheel checks | Experimental `.app` launcher/resource discovery; manual file picking; use a viewer build compatible with your Mac |
+| Linux ARM64 / Raspberry Pi | ARM64 Ubuntu CI covers the Python package; physical Pi/Raspberry Pi OS untested | No verified Pi viewer workflow. A compatible graphical Firestorm build is a separate prerequisite |
+| Headless / remote / containers / other systems | Offline metadata tools can work where Python dependencies are available; other combinations untested | No headless viewer service or remote MCP transport; desktop control runs beside the viewer |
 
-Replace the example path with the folder you extracted. The MCP host must support local **stdio** servers. The JSON wrapper varies by host; the command and arguments are the same. For Codex, see [installation and configuration](docs/INSTALLATION.md). The server itself also exposes `firestorm-mcp`, `firestorm-mcp-launch` and `firestorm-mcp-check` console commands in its installed environment.
+CI uses synthetic fixtures and never launches a real viewer. A green ARM64 job is not evidence that Firestorm runs on a Raspberry Pi. See [platform requirements and test boundaries](docs/PLATFORMS.md).
 
-**Already running Firestorm?** Coordinate a normal close and launcher start when your session is safe to end. LEAP connects at viewer startup; the helper cannot attach retroactively. Starting or reconnecting the MCP server alone does not start the viewer. Do not interrupt another agent's viewer session to refresh tool discovery.
+## Install
 
-The new package stores runtime state under `%LOCALAPPDATA%\FirestormMCP` by default, separate from the checkout and installed code. Use `FIRESTORM_MCP_HOME` or matching `--data-dir` arguments on the launcher/server/check command to choose another machine-local directory. See [configuration, upgrades and troubleshooting](docs/INSTALLATION.md).
+1. Install **Python 3.11–3.14** and, for live control, a compatible [Firestorm viewer](https://www.firestormviewer.org/). Keep the viewer and MCP on the same desktop computer and user account. Python alone is enough for offline asset inspection.
+2. Download the **setup/source ZIP** above and extract it into a permanent local folder. Do not copy a virtual environment from another machine or OS. The private repository still requires GitHub access.
+3. Run **`Install.cmd`** on Windows, or **`sh Install.sh`** from a terminal in that folder on Linux/macOS. Both use the same `install.py`, create an isolated `.venv` and print configuration with your machine's absolute paths. No administrator/root access is needed in a user-writable folder.
+4. Copy the printed `firestorm` entry into your MCP host's local stdio configuration. The generator also offers `--format codex` and `--format vscode` so each host keeps all selected paths. Keep other entries. For a different host wrapper or nonstandard viewer location, follow [installation and configuration](docs/INSTALLATION.md).
+5. When ready for a viewer session, run **`Start-FirestormMCP.cmd`** or **`sh Start-FirestormMCP.sh`**, sign in normally, then run the matching **`Check-FirestormMCP.cmd`** / **`sh Check-FirestormMCP.sh`**. An already-running viewer is left alone; arrange a normal close and launcher start when convenient.
+
+The platform-neutral installer can also be run as `python install.py` (Windows) or `python3 install.py` (Linux/macOS). An optional skill is a separate host installation; see [SKILLS.md](docs/SKILLS.md).
+
+**Trouble with setup?** Use the environment's Python with `-m firestorm_mcp.doctor` for offline checks, or `-m firestorm_mcp.configure` to print the configuration again. Diagnostics identify missing packages, viewer resources and a missing Linux graphical session without reading credentials or contacting the viewer. Their report omits private paths; the generated configuration contains your local paths and should stay local.
+
+For a nonstandard installation, `--viewer` selects a Windows `.exe`, a macOS `.app`, or Linux's supplied `firestorm` script. Pass the same selection to the configuration generator and launcher. Multiple discovered viewers require an explicit choice. [Examples and recovery steps](docs/INSTALLATION.md).
 
 ## What can it do today?
 
@@ -96,7 +99,7 @@ Use the optional [firestorm-mesh-preview skill](skills/firestorm-mesh-preview/SK
 
 **Start here; do not infer success from a tool's name or a dispatched input.**
 
-1. Call `connection_status {}`. If disconnected, report it. Starting the server and starting the viewer are different actions.
+1. Call `connection_status {}` and inspect `local_platform`, especially native file-dialog availability. If disconnected, report it. Starting the server and starting the viewer are different actions.
 2. Call `capabilities_refresh {}` and inspect unfamiliar operations with `viewer_api_inspect`.
 3. Acquire `control_acquire {"label":"describe the workflow","seconds":300}`. Keep all related calls in the same MCP session, renew before expiry and release in `finally`. A busy lease means coordinate with its owner.
 4. Discover relevant UI paths with `floater_open` and scoped `ui_find`. Inspect visibility/enabled state before input. Whole-viewer UI enumeration can include a large inventory tree.
@@ -105,7 +108,9 @@ Use the optional [firestorm-mesh-preview skill](skills/firestorm-mesh-preview/SK
 
 If native tool discovery is missing from your current agent session, the **real MCP SDK fallback** in [the agent guide](docs/AGENT_GUIDE.md) connects directly without restarting your agent application. `python -m firestorm_mcp.probe` tests this entry point without taking a lease or sending UI input.
 
-### Example: inspect a model without submitting an upload
+### Windows example: inspect a model without submitting an upload
+
+This recipe uses the Windows native picker. Check `connection_status.local_platform.native_file_dialogs` first. On Linux/macOS, arrange manual file selection in the model importer, then resume at `mesh_upload_status`; do not call the native picker tools. Establish ownership/reuse authority before opening a preview, as described in the [skill](skills/firestorm-mesh-preview/SKILL.md).
 
 ```text
 asset_inspect {"filename":"C:/exports/example-high.dae"}
@@ -130,7 +135,7 @@ Raw user captures, account/object identifiers, credentials, machine paths and pr
 
 ## Known limits
 
-- **Windows alpha.** Native file-dialog automation recognizes English common dialogs. Other OS/viewer combinations are not certified; transport-only tests on another OS do not certify its viewer integration.
+- **Platform limits.** Live evidence remains the Windows baseline. Linux/macOS launch support is experimental and requires manual file selection; neither a Pi viewer nor non-Windows native dialogs are implemented/verified. Setup and transport tests are separate from live viewer certification.
 - **UI selection is version-dependent.** The tested viewer lacks `UI.setSelectedByValue`, so `ui_select` reports unavailable. `ui_press_key` requires a visible enabled target `path` and returns readback; this is a breaking change from the original helper. A handled mouse click may leave a combo or checkbox unchanged. The [agent guide](docs/AGENT_GUIDE.md) records tested commit and checkbox-key procedures. Human input and viewer shortcuts can still interfere; verify state and do not blindly retry keys.
 - **Capture flags are heuristic.** Uniform/black/transparent frames are flagged, but a nonblank image can still be stale, obstructed or show the wrong subject. Inspect the image before using it as verification evidence.
 - **ASCII text fallback.** On the tested viewer, printable ASCII entry is supported up to 2,048 characters. Unicode/multiline paste requires another supported viewer API or user input.
@@ -152,6 +157,8 @@ AI contributions should have a responsible human owner. Agents can propose and t
 The community alpha can accept contributions while performance improvements and additional host/viewer testing continue. The documented limits are useful work for collaborators, rather than a requirement to implement every planned feature before inviting them. Workflow instructions can be improved independently of the MCP runtime through the optional skill.
 
 ## Development
+
+Windows example (Linux/macOS: `sh Install.sh --development`, then `.venv/bin/python -m pytest -q`):
 
 ```powershell
 git clone https://github.com/AochiToxx/firestorm-mcp.git

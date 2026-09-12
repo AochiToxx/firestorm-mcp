@@ -30,6 +30,7 @@ from .assets import inspect_asset, compare_images, file_record, capture_quality
 from .client import BridgeClient
 from .protocol import json_default
 from .paths import data_root, viewer_directory
+from .doctor import platform_support
 from . import __version__
 
 ROOT = data_root()
@@ -45,7 +46,8 @@ class Tools:
             raise ValueError("tool_profile must be all or compact")
         self.tool_profile = tool_profile
         viewer_dir = viewer_dir or viewer_directory()
-        self.root, self.viewer_dir = Path(root), Path(viewer_dir)
+        self.root = Path(root).expanduser().resolve()
+        self.viewer_dir = Path(viewer_dir).expanduser().resolve()
         self.client = BridgeClient(self.root / "runtime")
         self.captures = self.root / "captures"
         self.captures.mkdir(parents=True, exist_ok=True)
@@ -219,9 +221,11 @@ class Tools:
             from .native import dialogs
             return dialogs(self.viewer_dir)
 
-        @reg("Select an existing file in a freshly discovered Firestorm Open dialog. Verifies window ownership and filename readback. Import success must be checked in viewer state. Know which import/upload action opened the picker first.")
+        @reg("Windows only: select an existing file in a freshly discovered Firestorm Open dialog. Verifies ownership and filename readback. Import success needs viewer readback. Know which action opened the picker first. Other systems require manual file selection.")
         def native_file_choose(dialog_id: int, filename: str):
             from .native import choose_file
+            if not platform_support()["native_file_dialogs"]:
+                raise RuntimeError("Native file selection is unavailable on this OS; select the file manually in Firestorm")
             # Respect another agent's viewer lease before touching a native dialog.
             lease = c.rpc("acquire", label="file selection", seconds=60)
             try:
@@ -233,9 +237,10 @@ class Tools:
         @reg("Check whether the local Firestorm LEAP helper is connected. Does not log in or change the viewer.", True)
         def connection_status():
             try:
-                return c.rpc("status")
+                result = c.rpc("status")
             except ConnectionError as exc:
-                return {"connected": False, "reason": str(exc)}
+                result = {"connected": False, "reason": str(exc)}
+            return {**result, "local_platform": platform_support()}
 
         @reg("Discover all APIs and operations exposed by this running viewer; refresh dynamic MCP tool discovery.", True)
         def capabilities_refresh():
