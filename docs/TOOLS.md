@@ -2,7 +2,7 @@
 
 Generated from the current workflow definitions and historical Firestorm 7.2.4.80712 API discovery. Refresh the running viewer before relying on a dynamic operation. Counts are not test coverage.
 
-43 workflow tools; 94 historical viewer operations.
+56 workflow tools; 94 historical viewer operations.
 
 ## Workflow tools
 
@@ -19,7 +19,7 @@ Generated from the current workflow definitions and historical Firestorm 7.2.4.8
 | `events_subscribe` | Subscribe to a named viewer event stream, such as StartupState or LLAutopilot. Events are bounded and remain local until read. |
 | `events_unsubscribe` | Stop subscribing to a viewer event stream. |
 | `events_read` | Read subscribed viewer events after a cursor. The dropped flag identifies buffer overflow; do not infer missing events. |
-| `ui_find` | Search paths or basenames, case-insensitively, within a narrow under path. max_depth=1 includes root and children. Follow next_offset for more results; each page still enumerates the requested subtree. |
+| `ui_find` | Search paths or basenames within a narrow live subtree. Whole-view/Floater View and recursive scans are rejected; prefer offline ui_map/ui_task then ui_read. max_depth and paging filter after enumeration, not its cost. |
 | `ui_get_value` | Read the value of a specific discovered UI control. Use targeted paths to avoid unrelated chat or private fields. |
 | `ui_click` | Click a visible, enabled control. A registered floater invokes a unique button callback; otherwise uses coordinates. observe_path returns before/after state. Verify the effect from readback. |
 | `ui_set_text` | Replace text in a discovered edit control using viewer input, then read back its value. Does not press Enter. |
@@ -51,6 +51,19 @@ Generated from the current workflow definitions and historical Firestorm 7.2.4.8
 | `mesh_upload_status` | Read importer LOD files/counts, physics, dimensions, warnings, weights, displayed fee and visibility. Does not calculate or upload. Readback is non-atomic; quote freshness and file bytes remain unverified. |
 | `local_mesh_status` | Read Local Mesh's selected item/object and displayed import log. This is local preview evidence, not a simulator upload. |
 | `capture_manifest_read` | Read a saved capture manifest created by this server. |
+| `builder_capabilities` | Report sidecar builder capabilities from live discovery. External-file editing requires External Edit registration. Complete object APIs are unavailable without a compatible native endpoint; runtime injection is not implemented. Discovery is not a live-effect test. |
+| `builder_selection_summary` | Read the visible Build panel's displayed link number or selected face indices through stock LEAP. Leaves selection untouched. Hidden/disabled labels return unknown; no object UUID, full linkset or complete face metadata is inferred. |
+| `viewer_runtime_identity` | Fingerprint the connected Windows viewer's executable on disk for build diagnostics. Does not inject, read process memory, or prove the running image matches the file. |
+| `script_sessions` | List script files explicitly registered by Firestorm's External Edit button. Does not scan inventory or temporary directories. Active file is not proof that the editor is still open. |
+| `script_read` | Read a registered script's UTF-8 source and SHA256 for conflict detection. This reads the external-editor file, not the simulator asset. |
+| `script_write` | Write a registered script with a required prior SHA256 and backup. Requires a control lease. Firestorm may automatically compile/save to the simulator; this call verifies only the local file. Inspect compiler results before retrying. |
+| `object_selection` | Read selected object UUIDs and selected texture-entry face indices using the native FSMCPBuilder extension. Stock Firestorm returns an explicit unsupported error. |
+| `object_linkset` | Read a loaded object's linkset using native FSMCPBuilder. Link numbers follow the viewer's current child order; simulator completeness is not guaranteed. |
+| `object_faces` | Read native FSMCPBuilder texture entries for one loaded prim: face indices, texture IDs, color and UV parameters. Does not claim mesh triangles are faces or resolve PBR assets. |
+| `viewer_latency` | Measure 1-20 sequential bridge plus viewer event-loop ping round trips in milliseconds. No world mutation. Does not measure simulator, asset loading or script compile latency. |
+| `ui_map` | Search a cached local map of installed XUI control IDs, labels and tooltips, without contacting the viewer. Narrow by document. Candidate paths need ui_read verification; custom skins and duplicate instances are not verified. |
+| `ui_task` | List task IDs or retrieve a task guide and relevant source control IDs for scripts, Build, inventory, mesh previews or preferences. Does not open anything. Prefer listed semantic tools, then ui_read before UI input. |
+| `ui_read` | Read 1-20 exact UI paths or ui_map IDs in one request, using targeted getInfo calls and a total viewer-wait budget. No tree scans or input. Values are opt-in, hidden values suppressed and long values truncated. Does not distinguish duplicate editor instances. |
 
 ## Viewer operations
 
